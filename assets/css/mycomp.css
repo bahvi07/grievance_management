@@ -1,0 +1,93 @@
+/* Top Header */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  background: linear-gradient(#f15922);
+  color: white;
+  z-index: 1050;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.top-header .brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  gap: 10px;
+  font-size: 1.1rem;
+}
+
+.top-header img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+#return{
+    background-color: #f15922;
+    color: white;
+}
+.content{
+margin: 100px 0 100px 0;
+}
+@media (max-width:768px){
+    #return{
+        margin-top: 50px;
+    }
+}
+
+/* Enhanced Table Styles */
+.table-responsive {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: #fff;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+table.table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.table thead.table-dark th {
+  background: linear-gradient(90deg, #f15922 60%, #fd7e14 100%);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background: #fff3ed;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  padding: 0.75rem 1rem;
+  border-color: #f7cbbd;
+}
+
+.table-bordered > :not(caption) > * > * {
+  border-width: 1.5px;
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    padding: 0.5rem;
+  }
+  table.table {
+    font-size: 0.92rem;
+  }
+}

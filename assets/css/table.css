@@ -1,0 +1,197 @@
+/* Modern Complaints Table Theme */
+.complaintTable {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
+  margin-bottom: 0;
+   font-family: 'Segoe UI', sans-serif;
+  font-size: 0.88rem;
+}
+
+.complaintTable thead {
+  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+}
+
+.complaintTable th, .complaintTable td {
+  vertical-align: middle;
+  border: none;
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+}
+
+.complaintTable tbody tr {
+  transition: background 0.18s;
+}
+
+.complaintTable tbody tr:hover {
+  background: #fff6f0;
+}
+
+.complaintTable .btn {
+  border-radius: 20px;
+  font-size: 0.95rem;
+  padding: 0.35rem 1.1rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.complaintTable .btn-warning {
+  background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+  color: #333;
+  border: none;
+}
+
+.complaintTable .btn-warning:hover {
+  background: linear-gradient(90deg, #ffd200 0%, #f7971e 100%);
+  color: #111;
+}
+
+.complaintTable .btn-success {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #222;
+  border: none;
+}
+
+.complaintTable .btn-success:hover {
+  background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+  color: #111;
+}
+
+.complaintTable .btn-danger {
+  background: linear-gradient(90deg, #fd3a69 0%, #ff7e5f 100%);
+  color: #fff;
+  border: none;
+}
+
+.complaintTable .btn-danger:hover {
+  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
+  color: #fff;
+}
+#dt-length-0{
+    margin-right: 10px;
+    border-radius: 7px;
+    padding: 5px;
+    
+}
+#dt-search-0{
+border-radius: 10px;    
+}
+#dt-search-0:focus{
+background-color: white;
+}
+  /* Modern Department Table Theme (matches complaints.php) */
+#departmentTable {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
+  margin-bottom: 0;
+   font-family: 'Segoe UI', sans-serif;
+  font-size: 0.88rem;
+}
+
+#departmentTable thead {
+  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
+  color: #fff;
+  font-size: 1.05rem;
+  border: none;
+}
+
+#departmentTable th, #departmentTable td {
+  vertical-align: middle;
+  border: none;
+  padding: 0.80rem 1rem;
+  font-size: 0.88rem;
+}
+
+#departmentTable tbody tr {
+  transition: background 0.18s;
+}
+
+#departmentTable tbody tr:hover {
+  background: #fff6f0;
+}
+
+/* Feedback Table Custom Styles */
+#feedbackTable {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
+  margin-bottom: 0;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.88rem;
+  width: 100%;
+  table-layout: auto;
+}
+
+#feedbackTable thead {
+  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+}
+
+#feedbackTable th, #feedbackTable td {
+  vertical-align: middle;
+  border: none;
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+  text-align: left;
+  white-space: normal;
+}
+
+#feedbackTable tbody tr {
+  transition: background 0.18s;
+}
+
+#feedbackTable tbody tr:hover {
+  background: #fff6f0;
+}
+
+#feedbackTable td.phone-col {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: 'Segoe UI Mono', monospace;
+  letter-spacing: 1px;
+}
+
+#feedbackTable td.feedback-col {
+  max-width: 300px;
+  word-break: break-word;
+}
+
+#feedbackTable th.date-col,
+#feedbackTable td.date-col {
+  max-width: 110px;
+  min-width: 80px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .complaintTable th, .complaintTable td {
+    font-size: 0.92rem;
+    padding: 0.5rem 0.5rem;
+  }
+   #departmentTable th, #departmentTable td {
+    font-size: 0.92rem;
+    padding: 0.5rem 0.5rem;
+  }
+  #feedbackTable {
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+  #feedbackTable th, #feedbackTable td {
+    padding: 0.4rem 0.4rem;
+  }
+}
+
+body {
+  overflow-x: hidden;
+}

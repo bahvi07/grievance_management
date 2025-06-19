@@ -1,0 +1,276 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #f8f9fa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body,
+.top-header,
+.dashboard-content,
+.brand {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.top-head {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 80px;
+  width: 100%;
+  color:black;
+  z-index: 1050;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem 1.5rem 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.top-head .brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  gap: 20px;
+  font-size: 1.1rem;
+}
+
+.top-head img {
+  height: 40px;
+  width: 40px;
+  margin-left: 2rem;
+  border-radius: 50%;
+}
+
+.dashboard-content {
+  margin-top: 100px;
+  margin-right: 0;
+  margin-left: 245px;
+  padding-bottom: 85px; /* Adjust this value to be a bit more than your footer's height */
+}
+
+.status-card {
+            width: 160px;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.3s ease;
+            height: 160px;
+            animation: fadeInUp 0.5s ease-in-out;
+            user-select:none;
+            cursor: pointer;
+            margin-right: 24px;
+            margin-bottom: 24px;
+        }
+
+        .status-card:hover {
+            transform: scale(1.05);
+        }
+
+        .status-card .count {
+            font-size: 1.45rem;
+            font-weight: bold;
+        }
+        body{
+            background: #FDEDE6;
+        }
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+.complaint-center {
+  margin-top: 100px;
+  margin-right: 0;
+  margin-left: 245px;
+  padding-bottom: 120px; /* Make sure this is present and not overridden */
+}
+
+        .nav-tabs .nav-link.active {
+            background-image: linear-gradient(to bottom, #FF7E5F, #FD3A69);
+            color: white;
+            border-radius: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #FD3A69;
+        }
+
+        /* Add shadow to Bootstrap modal */
+        .modal-content {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 1.5px 6px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+        }
+
+        #complaintImage {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        }
+
+.text-orange{
+    color: #FD7E14;
+}
+     /* Table Header */
+.table thead {
+    background-color: #FFE5DC;
+    color: #2d2d2d;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Table Rows */
+.table-hover tbody tr:hover {
+    background-color: #FFF3F0;
+}
+
+/* Action Buttons */
+.btn-warning {
+    background-color: #FD7E14;
+    border: none;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #FD3A69;
+    border: none;
+    color: white;
+}
+
+.btn-warning:hover,
+.btn-danger:hover {
+    opacity: 0.9;
+}
+
+/* Filters */
+
+.btn-outline-danger {
+    border-color: #FD3A69;
+    color: #FD3A69;
+}
+
+.btn-outline-danger:hover {
+    background-color: #FD3A69;
+    color: white;
+}
+
+
+/* DataTables Pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #FFE5DC !important;
+    border: 1px solid #FD3A69 !important;
+    border-radius: 5px;
+    margin: 0 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #FD3A69 !important;
+    color: white !important;
+}
+
+/* Search Box */
+.dataTables_filter input {
+    border-radius: 5px;
+    border: 1px solid #FD3A69;
+    padding: 6px 10px;
+}
+
+/* Password Change Modal Styles */
+#changePasswordModal .modal-content {
+    background: #fff;
+    border: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+#changePasswordModal .modal-header {
+    background: #FD7E14;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#changePasswordModal .modal-title {
+    color: white;
+    font-weight: 600;
+}
+
+#changePasswordModal .modal-body {
+    padding: 1.8rem;
+}
+
+#changePasswordModal .form-label {
+    color: #2d2d2d;
+    font-weight: 500;
+}
+
+#changePasswordModal .form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.55rem;
+}
+
+#changePasswordModal .form-control:focus {
+    border-color: #FD7E14;
+    box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.15);
+}
+
+#changePasswordModal .password-strength {
+    margin-top: 0.5rem;
+}
+
+#changePasswordModal .progress {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    height: 6px !important;
+}
+
+#changePasswordModal .progress-bar {
+    background-color: #FD7E14;
+}
+
+#changePasswordModal .modal-footer {
+    border-top: 1px solid #eee;
+    padding: 1.5rem;
+}
+
+#changePasswordModal .btn-secondary {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+}
+
+#changePasswordModal .btn-primary {
+    background-color: #FD7E14;
+    border: none;
+    color: white;
+}
+
+#changePasswordModal .btn-secondary:hover {
+    background-color: #bb2d3b;
+}
+
+#changePasswordModal .btn-primary:hover {
+    background-color: #e06c0d;
+}
+
+#changePasswordModal small.text-muted {
+    color: #666 !important;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+

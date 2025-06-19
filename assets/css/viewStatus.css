@@ -1,0 +1,17 @@
+.card {
+    margin: 50px 0 40px 0;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin: 90px 0 70px 0;
+    }
+    .return {
+        margin-bottom: 30px;
+    }
+}
+
+/* Add this class for footer space */
+.footer-space {
+    padding-bottom: 90px; /* Adjust to match or slightly exceed your footer height */
+}
