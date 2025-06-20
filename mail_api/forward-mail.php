@@ -47,7 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST['name'] ?? 'Unknown';
         $phone = $_POST['phone'] ?? '';
         $location = $_POST['location'] ?? '';
+        $description = $_POST['description'] ?? '';
         $image = $_POST['image'] ?? '';
+        $user_email = $_POST['email'] ?? '';
 
         if (empty($to) || empty($refid)) {
             echo "<!DOCTYPE html>
@@ -72,14 +74,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $subject = "Complaint Forwarded (Ref ID: $refid)";
-        $message = "
-        <h3>Complaint Forwarded</h3>
-        <p><strong>Reference ID:</strong> $refid</p>
-        <p><strong>Name:</strong> $name</p>
-        <p><strong>Phone:</strong> $phone</p>
-        <p><strong>Location:</strong> $location</p>
-        <p>This complaint has been forwarded to your department for review and action.</p>
-        ";
+        $message = '
+        <div style="font-family: Arial, sans-serif; background: #fff6f2; padding: 24px; border-radius: 12px; max-width: 480px; margin: auto; border: 1px solid #ffd6c1;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <img src=../assets/images/complain_upload/Bjplogo.jpg" alt="Logo" style="height: 48px;">
+            <h2 style="color: #FF4500; margin: 12px 0 0 0;">Vidhayak Sewa Kendra</h2>
+          </div>
+          <h3 style="color: #f15a29; text-align: center;">Complaint Forwarded to Your Department</h3>
+          <table style="width: 100%; margin: 18px 0; font-size: 1.05em;">
+            <tr><td><b>Reference ID:</b></td><td>' . htmlspecialchars($refid) . '</td></tr>
+            <tr><td><b>Name:</b></td><td>' . htmlspecialchars($name) . '</td></tr>
+            <tr><td><b>Email:</b></td><td>' . htmlspecialchars($user_email) . '</td></tr>
+            <tr><td><b>Phone:</b></td><td>' . htmlspecialchars($phone) . '</td></tr>
+            <tr><td><b>Location:</b></td><td>' . htmlspecialchars($location) . '</td></tr>
+          </table>
+          <div style="background: #fff; border: 2px dashed #f15a29; border-radius: 8px; padding: 18px; margin: 18px 0;">
+            <b>Complaint Description:</b>
+            <div style="margin-top: 8px; color: #333;">' . nl2br(htmlspecialchars($description)) . '</div>
+          </div>
+          <hr style="border: none; border-top: 1px solid #ffd6c1; margin: 24px 0;">
+          <div style="font-size: 0.95em; color: #888; text-align: center;">
+            Please to admin for more details or to take action.<br>
+            Need help? Contact <a href="mailto:support@yourdomain.com" style="color: #f15a29;">support@yourdomain.com</a>
+          </div>
+        </div>
+        ';
         $attachments = [];
         
         if (!empty($image) && file_exists("../assets/images/complain_upload/" . $image)) {

@@ -1,6 +1,36 @@
 // =============================
 // SEND OTP & VALIDATE PHONE
 // =============================
+let countdownInterval;
+const resendBtn = document.getElementById('resend');
+const expElement = document.getElementById('expire_time');
+let currentPhone = '';
+let allowImmediateResend = false; // Flag to track if immediate resend is allowed
+
+// Function to start or restart the countdown
+function startCountdown() {
+  let seconds = 60;
+  expElement.classList.remove('d-none');
+  resendBtn.classList.add('d-none');
+  allowImmediateResend = false; // Reset flag when countdown starts
+
+  // Clear any existing timer
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    expElement.innerHTML = `Expire in ${seconds} seconds`;
+    seconds--;
+
+    if (seconds < 0) {
+      clearInterval(countdownInterval);
+      expElement.classList.add('d-none');
+      resendBtn.classList.remove('d-none');
+    }
+  }, 1000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const otpBtn = document.querySelector(".otpBtn")
   const bootstrap = window.bootstrap // Declare bootstrap variable
@@ -10,16 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (otpBtn) {
     otpBtn.addEventListener("click", async () => {
       const phoneInput = document.getElementById("phone");
-      const phone = phoneInput.value.trim()
-
-      const pattern = /^[6-9]\d{9}$/
+      const phone = phoneInput.value.trim();
+      currentPhone = phone; // Store phone for resend and verify
+      console.log('[DEBUG] Set currentPhone:', currentPhone);
+      otpBtn.disabled=true;
+      const pattern = /^[6-9]\d{9}$/;
       if (!pattern.test(phone)) {
-        showToastr("error")
-        phoneInput.focus()
-        return
+        showToastr("error", "Invalid phone number! Enter 10 digits starting with 6-9.");
+        phoneInput.focus();
+        return;
       }
-
-      showToastr("success")
 
       try {
         const response = await fetch("../otp/send-otp.php", {
@@ -28,47 +58,121 @@ document.addEventListener("DOMContentLoaded", () => {
             "Content-Type": "application/x-www-form-urlencoded",
           },
           body: `phone=${encodeURIComponent(phone)}`,
-        })
+        });
 
-        const result = await response.text()
+        const result = await response.text();
 
         try {
-          const data = JSON.parse(result)
+          const data = JSON.parse(result);
           if (data.status === "success") {
-            const otpModal = new bootstrap.Modal(document.getElementById("otpModal"))
+            showToastr("success", "OTP sent successfully!");
+            const otpModal = new bootstrap.Modal(document.getElementById("otpModal"));
+            
             setTimeout(() => {
-              otpModal.show()
-              // Show OTP in toastr for development/testing only, after modal opens
+              otpModal.show();
+              startCountdown();
+              
+              // OTP Info Toast (delayed for better UX)
               if (data.otp) {
                 setTimeout(() => {
-                  toastr.info(`Your OTP is: <b>${data.otp}</b>`, "Your OTP", { timeOut: 7000, escapeHtml: false })
-                }, 800) // 500ms delay after modal opens
+                  toastr.info(`Your OTP is: <b>${data.otp}</b>`, "Your OTP", { timeOut: 7000, escapeHtml: false });
+                }, 1400);
               }
-            }, 800)
+            }, 800);
+
           } else {
-            throw new Error(data.message || "Unknown error occurred")
+            Swal.fire("Error", data.message || "An unknown error occurred.", "error");
           }
         } catch (e) {
-          console.error("Non-JSON response:", result)
-          Swal.fire("Server Error", "Unexpected server response.", "error")
+          console.error("Non-JSON response:", result);
+          Swal.fire("Server Error", "Unexpected server response.", "error");
         }
       } catch (error) {
-        console.error("Error sending OTP:", error)
-        Swal.fire("Failed", "Failed to send OTP: " + error.message, "error")
+        console.error("Error sending OTP:", error);
+        Swal.fire("Failed", "Failed to send OTP: " + error.message, "error");
       }
-    })
+    });
+  }
+
+  // Event listener for the resend button
+  if (resendBtn) {
+    resendBtn.addEventListener('click', async () => {
+      if (!currentPhone) {
+        showToastr("error", "Could not find the phone number to resend OTP.");
+        return;
+      }
+
+      resendBtn.disabled = true;
+      resendBtn.innerHTML = '<em>Resending...</em>';
+
+      try {
+        // ✅ FIXED: Send flag if immediate resend is allowed after failed verification
+        let requestBody = `phone=${encodeURIComponent(currentPhone)}`;
+        if (allowImmediateResend) {
+          requestBody += '&failed_verification=true';
+          console.log('Bypassing cooldown due to failed verification'); // Debug log
+        }
+
+        const response = await fetch("../otp/resend-otp.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: requestBody,
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          showToastr("success", "A new OTP has been sent!");
+          startCountdown(); // This will also reset allowImmediateResend to false
+          // New OTP Info Toast (delayed)
+          if (data.otp) {
+             setTimeout(() => {
+                toastr.info(`New OTP: <b>${data.otp}</b>`, "Your OTP", { timeOut: 7000, escapeHtml: false });
+             }, 1400);
+          }
+        } else {
+          Swal.fire("Error", data.message || "Could not resend OTP.", "error");
+        }
+      } catch (error) {
+        console.error("Resend OTP error:", error);
+        Swal.fire("Failed", "An error occurred while trying to resend the OTP.", "error");
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = 'Resend';
+      }
+    });
   }
 })
 
 // =============================
 // TOASTR NOTIFICATIONS
 // =============================
-function showToastr(type) {
-  const toastr = window.toastr // Declare toastr variable
-  if (type === "success") {
-    toastr.success("Phone number is valid. Sending OTP...")
-  } else {
-    toastr.error("Invalid phone number! Enter 10 digits starting with 6-9.")
+function showToastr(type, message) {
+  const toastrOptions = {
+    closeButton: true,
+    progressBar: true,
+    positionClass: "toast-top-right",
+    timeOut: 3000,
+    extendedTimeOut: 1200,
+  };
+
+  switch (type) {
+    case "success":
+      toastr.success(message, "Success", { ...toastrOptions, timeOut: 1500 });
+      break;
+    case "error":
+      toastr.error(message, "Error", toastrOptions);
+      break;
+    case "info":
+      toastr.info(message, "Info", toastrOptions);
+      break;
+    case "warning":
+      toastr.warning(message, "Warning", toastrOptions);
+      break;
+    default:
+      toastr.info(message, "Notification", toastrOptions);
   }
 }
 
@@ -116,6 +220,18 @@ inputs.forEach((input, index) => {
   })
 })
 
+document.querySelectorAll(".otp-input").forEach((input) => {
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const verifyBtn = document.getElementById("verifyOtpBtn");
+      if (verifyBtn) {
+        verifyBtn.click();
+      }
+    }
+  });
+});
+
 // =============================
 // VERIFY OTP
 // =============================
@@ -137,17 +253,33 @@ if (verifyOtpBtn) {
       return
     }
 
+    // Fallback: If currentPhone is not set, get it from the phone input
+    if (!currentPhone) {
+      const phoneInput = document.getElementById("phone");
+      if (phoneInput) {
+        currentPhone = phoneInput.value.trim();
+        console.log('[DEBUG] Fallback set currentPhone:', currentPhone);
+      }
+    }
+    console.log('[DEBUG] Verifying OTP for phone:', currentPhone, 'OTP:', finalOtp);
+
+    // Show spinner/disable button
+    verifyOtpBtn.disabled = true;
+    const originalText = verifyOtpBtn.innerHTML;
+    verifyOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Verifying...';
+
     try {
       const response = await fetch("../otp/verify-otp.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `otp=${encodeURIComponent(finalOtp)}`,
+        body: `otp=${encodeURIComponent(finalOtp)}&phone=${encodeURIComponent(currentPhone)}`,
       })
 
       const result = await response.text()
-console.log(result);
+      console.log('[DEBUG] OTP verify response:', result);
+      
       try {
         const data = JSON.parse(result)
 
@@ -162,7 +294,7 @@ console.log(result);
             window.location.href = "../user/user-dashboard.php"
           })
         } else {
-          // ✅ Fixed: Wait for user to click OK before reloading
+          // ✅ FIXED: Set flag to allow immediate resend after failed verification
           Swal.fire({
             icon: "error",
             title: "Invalid OTP",
@@ -170,7 +302,7 @@ console.log(result);
             confirmButtonText: "Try Again",
           }).then((result) => {
             if (result.isConfirmed || result.isDismissed) {
-              // Clear OTP inputs and close modal
+              // Clear OTP inputs
               document.querySelectorAll(".otp-input").forEach((input) => {
                 input.value = ""
               })
@@ -179,11 +311,13 @@ console.log(result);
               if (firstOtpInput) {
                 firstOtpInput.focus()
               }
-              // Optionally close modal and go back to phone input
-              const otpModal = bootstrap.Modal.getInstance(document.getElementById("otpModal"))
-              if (otpModal) {
-                otpModal.hide()
-              }
+              // Stop countdown and show resend button immediately
+              clearInterval(countdownInterval);
+              expElement.classList.add('d-none');
+              resendBtn.classList.remove('d-none');
+              // ✅ FIXED: Allow immediate resend after failed verification
+              allowImmediateResend = true;
+              console.log('Immediate resend allowed after failed verification'); // Debug log
             }
           })
         }
@@ -194,34 +328,10 @@ console.log(result);
     } catch (error) {
       console.error("Request error:", error)
       Swal.fire("Failed", "Failed to verify OTP: " + error.message, "error")
+    } finally {
+      // Restore button state
+      verifyOtpBtn.disabled = false;
+      verifyOtpBtn.innerHTML = originalText;
     }
   })
 }
-
-// =============================
-// ENTER KEY HANDLERS
-// =============================
-document.addEventListener("DOMContentLoaded", () => {
-  const phoneInput = document.getElementById("phone")
-  const Swal = window.Swal // Declare Swal variable
-
-  if (phoneInput) {
-    phoneInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault()
-        const otpBtn = document.querySelector(".otpBtn")
-        if (otpBtn) otpBtn.click()
-      }
-    })
-  }
-
-  document.querySelectorAll(".otp-input").forEach((input) => {
-    input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault()
-        const verifyBtn = document.getElementById("verifyOtpBtn")
-        if (verifyBtn) verifyBtn.click()
-      }
-    })
-  })
-})

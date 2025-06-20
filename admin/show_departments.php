@@ -114,6 +114,17 @@ while($row = $result->fetch_assoc()){
     </a>
 </button>
 
+<form method='POST' action='../mail_api/forward-mail.php' class='d-inline forwardForm'>
+  <input type='hidden' name='refid' value='" . htmlspecialchars($refid) . "'>
+  <input type='hidden' name='dept_email' value='" . htmlspecialchars($row['email']) . "'>
+  <input type='hidden' name='name' value='" . htmlspecialchars($complaintData['name'] ?? '') . "'>
+  <input type='hidden' name='email' value='" . htmlspecialchars($complaintData['email'] ?? '') . "'>
+  <input type='hidden' name='phone' value='" . htmlspecialchars($complaintData['phone'] ?? '') . "'>
+  <input type='hidden' name='location' value='" . htmlspecialchars($complaintData['location'] ?? '') . "'>
+  <input type='hidden' name='description' value='" . htmlspecialchars($complaintData['complaint'] ?? '') . "'>
+  <input type='hidden' name='image' value='" . htmlspecialchars(basename($complaintData['image'] ?? '')) . "'>
+  <button type='submit' class='btn btn-sm btn-success mt-2'>Forward</button>
+</form>
 
         </td>
         

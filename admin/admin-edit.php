@@ -70,19 +70,17 @@ include '../auth/admin-auth-check.php';
                                     <small class="text-muted">Code will be sent to your email</small>
                                 </div>
                                 <!-- New Password -->
-                                <div class="mb-3">
+                                <div class="mb-3 position-relative">
                                     <label for="newPassword" class="form-label">New Password</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control" id="newPassword" name="newPassword" required disabled>
+                                        <input type="password" id="newPassword" name="newPassword" class="form-control" required disabled>
                                         <span class="input-group-text bg-white" style="cursor:pointer;" id="toggleNewPassword">
                                             <i class="fa fa-eye-slash" id="newPasswordIcon"></i>
                                         </span>
                                     </div>
-                                    <div class="password-strength mt-2">
-                                        <div class="progress" style="height: 5px;">
-                                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                                        </div>
-                                        <small class="text-muted">Password must be at least 8 characters long and include uppercase, lowercase, number and special character</small>
+                                    <div id="passwordStrengthContainer" style="margin-top: 4px;">
+                                        <div id="passwordStrengthBar" style="height: 6px; width: 0; background: red; border-radius: 3px; transition: width 0.3s, background 0.3s;"></div>
+                                        <small id="passwordStrengthText" style="font-weight: bold; display: block; margin-top: 2px;"></small>
                                     </div>
                                 </div>
                                 <!-- Confirm Password -->

@@ -92,7 +92,10 @@ if (isset($_COOKIE['user_token'])) {
             style="background: linear-gradient(to right, #FF7E5F, #FD3A69); color: white; font-weight: 600; border-radius: 50px;">
             Verify OTP
           </button>
-          <p class="text-center mt-2">Resend</p>
+          <div class="text-center mt-3">
+              <p id="expire_time" class="text-muted mb-2">Expire in 60 seconds</p>
+              <button type="button" class="btn btn-link p-0 d-none" id="resend" style="color: #FF4500; text-decoration: none; font-weight: 600;">Resend</button>
+          </div>
         </form>
       </div>
     </div>

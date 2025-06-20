@@ -56,12 +56,28 @@ try {
     $sender_name = $_ENV['MAIL_FROM_NAME'];
 
     $subject = "Password Reset Verification Code";
-    $message = "
-        <h3>Verification Code</h3>
-        <p><strong>Admin ID:</strong> $id</p>
-        <p><strong>Code:</strong> $code</p>
-        <p>This code will expire in 10 minutes.</p>
-        ";
+    $message = '
+        <div style="font-family: Arial, sans-serif; background: #fff6f2; padding: 24px; border-radius: 12px; max-width: 480px; margin: auto; border: 1px solid #ffd6c1;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <img src="../assets/images/general_images/Bjplogo.jpg" alt="Logo" style="height: 48px;">
+            <h2 style="color: #FF4500; margin: 12px 0 0 0;">Vidhayak Sewa Kendra</h2>
+          </div>
+          <h3 style="color: #f15a29; text-align: center;">Password Reset Verification Code</h3>
+          <table style="width: 100%; margin: 18px 0; font-size: 1.05em;">
+            <tr><td><b>Admin ID:</b></td><td>' . htmlspecialchars($id) . '</td></tr>
+            <tr><td colspan="2" style="text-align:center;"><b>This code will expire in 10 minutes.</b></td></tr>
+          </table>
+          <div style="background: #fff; border: 2px dashed #f15a29; border-radius: 8px; padding: 24px; margin: 18px 0; text-align: center;">
+            <span style="font-size: 1.1em; color: #333;">Your Verification Code:</span><br>
+            <span style="font-size: 2em; letter-spacing: 6px; color: #f15a29; font-weight: bold; display: inline-block; margin-top: 10px;">' . htmlspecialchars($code) . '</span>
+          </div>
+          <hr style="border: none; border-top: 1px solid #ffd6c1; margin: 24px 0;">
+          <div style="font-size: 0.95em; color: #888; text-align: center;">
+            If you did not request this, please ignore this email.<br>
+            Need help? Contact <a href="mailto:support@yourdomain.com" style="color: #f15a29;">support@yourdomain.com</a>
+          </div>
+        </div>
+        ';
     
     $mail = new PHPMailer(true);
     $mail->isSMTP();

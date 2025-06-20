@@ -42,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if (empty($errorMsg)) {
         if (empty($id) || empty($pswd)) {
             $errorMsg = "Please enter both admin ID and password.";
+        } else if (!preg_match('/^admin[a-zA-Z0-9_]{2,16}$/', $id)) {
+            $errorMsg = "Admin ID must start with 'admin' and be 5-20 characters, using only letters, numbers, or underscores.";
         } else {
             try {
                 $stmt = $conn->prepare("SELECT * FROM admin WHERE admin_id=?");

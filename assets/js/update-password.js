@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
                   
                     // Enable the verification code input
                     const verificationCodeInput = document.getElementById('verificationCode');
-                    document.getElementById('newPassword').disabled=false;
-                    document.getElementById('confirmPassword').disabled=false;
-                    document.getElementById('reset_pswd').disabled=false;
+                    document.getElementById('newPassword').disabled = false;
+                    document.getElementById('confirmPassword').disabled = false;
+                    document.getElementById('reset_pswd').disabled = false;
                     
                     
                     if (verificationCodeInput) verificationCodeInput.disabled = false;
@@ -101,12 +101,19 @@ text:'Your password is updated successfully'
              bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
             window.location.reload();
         });
+        resetBtn.innerHTML = 'Successfully Updated';
     }else {
         Swal.fire({
             icon: 'error',
             title: 'Error',
             text: data.message || 'Failed to reset Password.'
+        }).then(() => {
+            // Optionally clear password fields and focus
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('newPassword').focus();
         });
+        resetBtn.innerHTML = 'Change Password';
     }
 } catch (error) {
     console.error('Error:', error);
@@ -115,11 +122,47 @@ text:'Your password is updated successfully'
         title: 'Error',
         text: 'An error occurred. Please try again.'
     });
+    resetBtn.innerHTML = 'Change Password';
 } finally {
     resetBtn.disabled = false;
-    resetBtn.innerHTML = 'Succesfully Updated';
 }
     });}
+
+    // Password strength indicator
+    const passwordInput = document.getElementById('newPassword');
+    const bar = document.getElementById('passwordStrengthBar');
+    const text = document.getElementById('passwordStrengthText');
+    if (passwordInput && bar && text) {
+        passwordInput.addEventListener('input', function () {
+            const val = passwordInput.value;
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[a-z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            // Update bar and text
+            if (score <= 2) {
+                bar.style.width = '33%';
+                bar.style.background = 'red';
+                text.textContent = 'Weak';
+                text.style.color = 'red';
+            } else if (score === 3 || score === 4) {
+                bar.style.width = '66%';
+                bar.style.background = 'orange';
+                text.textContent = 'Medium';
+                text.style.color = 'orange';
+            } else if (score === 5) {
+                bar.style.width = '100%';
+                bar.style.background = 'green';
+                text.textContent = 'Strong';
+                text.style.color = 'green';
+            } else {
+                bar.style.width = '0';
+                text.textContent = '';
+            }
+        });
+    }
 });
 
 // Toggle pswd 
@@ -127,19 +170,15 @@ $(document).ready(() => {
     $('#toggleNewPassword').on('click', () => {
         const passwordInput = $('#newPassword');
         const icon = $('#newPasswordIcon');
-
         const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
         passwordInput.attr('type', type);
-
-        icon.toggleClass('fa-eye fa-eye-slash'); // Toggle both classes
+        icon.toggleClass('fa-eye fa-eye-slash');
     });
     $('#toggleConfirmPassword').on('click', () => {
         const passwordInput = $('#confirmPassword');
         const icon = $('#confirmPasswordIcon');
-
         const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
         passwordInput.attr('type', type);
-
-        icon.toggleClass('fa-eye fa-eye-slash'); // Toggle both classes
+        icon.toggleClass('fa-eye fa-eye-slash');
     });
 });

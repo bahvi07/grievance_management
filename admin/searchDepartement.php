@@ -33,8 +33,10 @@ if ($result->num_rows > 0) {
   <input type='hidden' name='refid' value='" . htmlspecialchars($refid) . "'>
   <input type='hidden' name='dept_email' value='" . htmlspecialchars($row['email']) . "'>
   <input type='hidden' name='name' value='" . htmlspecialchars($complaintData['name'] ?? '') . "'>
+  <input type='hidden' name='email' value='" . htmlspecialchars($complaintData['email'] ?? '') . "'>
   <input type='hidden' name='phone' value='" . htmlspecialchars($complaintData['phone'] ?? '') . "'>
   <input type='hidden' name='location' value='" . htmlspecialchars($complaintData['location'] ?? '') . "'>
+  <input type='hidden' name='description' value='" . htmlspecialchars($complaintData['complaint'] ?? '') . "'>
   <input type='hidden' name='image' value='" . htmlspecialchars(basename($complaintData['image'] ?? '')) . "'>
 
   <button type='submit' class='btn btn-sm btn-success mt-2'>Forward</button>
@@ -46,3 +48,24 @@ if ($result->num_rows > 0) {
   echo "<div class='text-muted'>No matching department found.</div>";
 }
 ?>
+
+<script>
+$(document).ready(function() {
+  $('.forwardForm').on('submit', function(e) {
+    var $form = $(this);
+    var $btn = $form.find('button[type="submit"]');
+    $btn.prop('disabled', true);
+    var originalText = $btn.html();
+    $btn.html('<span class="spinner-border spinner-border-sm"></span> Forwarding...');
+
+    // Let the form submit normally (page reloads or modal closes on success)
+    // If you want to handle via AJAX, preventDefault and handle response here
+
+    // If you want to re-enable/reset the button after a delay (for demo):
+    // setTimeout(function() {
+    //   $btn.prop('disabled', false);
+    //   $btn.html(originalText);
+    // }, 3000);
+  });
+});
+</script>

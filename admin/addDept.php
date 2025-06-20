@@ -22,7 +22,7 @@ try {
     if (empty($deptName)) $errorMsg['name'] = "Department Name is required.";
     if (empty($category)) $errorMsg['category'] = "Select a category.";
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errorMsg['email'] = "Valid email is required.";
-    if (empty($phone) || !preg_match('/^[0-9]{10}$/', $phone)) $errorMsg['phone'] = "Valid 10-digit phone number is required.";
+    if (empty($phone) || !preg_match('/^[6-9]\d{9}$/', $phone)) $errorMsg['phone'] = "Valid 10-digit phone number (starting with 6-9) is required.";
     if (empty($area)) $errorMsg['area'] = "Area is required.";
 
         if (!empty($errorMsg)) {

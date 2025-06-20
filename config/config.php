@@ -5,6 +5,9 @@ require __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// Set the default timezone for the application
+date_default_timezone_set('Asia/Kolkata');
+
 // Database configuration
 $db_host = $_ENV['DB_HOST'];
 $db_username = $_ENV['DB_USERNAME'];

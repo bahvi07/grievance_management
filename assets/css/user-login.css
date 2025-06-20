@@ -94,6 +94,22 @@ label.form-label {
   opacity: 0.9;
   transform: translateY(-2px);
 }
+/* Resend Otp Button */
+#resend{
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#resend:hover {
+  color: #e63946 !important;
+  text-decoration: underline !important;
+}
+
+#resend:disabled {
+  color: #6c757d !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
 /* ===== OTP Modal Styles ===== */
 .modal-content {
