@@ -28,6 +28,16 @@ include '../auth/admin-auth-check.php';
         </button>
     </div>
 
+    <!-- Display session messages -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success"><?= $_SESSION['success_message'] ?></div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger"><?= $_SESSION['error_message'] ?></div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+
     <!-- Filters and Download -->
     <div class="row mb-4 align-items-end">
         <div class="col-md-3">
@@ -88,59 +98,38 @@ while($row = $result->fetch_assoc()){
         <td>" . htmlspecialchars($row['email']) . "</td>
         <td>
           <button 
-    class='btn btn-warning border btn-sm edit-btn' 
-    data-bs-toggle='modal' 
-    data-bs-target='#editDepartment'
-    data-id='" . htmlspecialchars($row['id']) . "'
-    data-category='" . htmlspecialchars($row['category']) . "'
-    data-area='" . htmlspecialchars($row['area']) . "'
-    data-name='" . htmlspecialchars($row['name']) . "'
-    data-phone='" . htmlspecialchars($row['phone']) . "'
-    data-email='" . htmlspecialchars($row['email']) . "'
->
-    <i class='fa fa-pencil' aria-hidden='true'></i>
-</button>
+            class='btn btn-warning border btn-sm edit-btn' 
+            data-bs-toggle='modal' 
+            data-bs-target='#editDepartment'
+            data-id='" . htmlspecialchars($row['id']) . "'
+            data-category='" . htmlspecialchars($row['category']) . "'
+            data-area='" . htmlspecialchars($row['area']) . "'
+            data-name='" . htmlspecialchars($row['name']) . "'
+            data-phone='" . htmlspecialchars($row['phone']) . "'
+            data-email='" . htmlspecialchars($row['email']) . "'
+          >
+              <i class='fa fa-pencil' aria-hidden='true'></i>
+          </button>
 
- 
-<form method='post' class='delete-form' style='display:inline'>
-    <input type='hidden' name='delete' value='" . htmlspecialchars($row['name']) . "'>
-    <button class='btn btn-danger border btn-sm' type='submit'>
-        <i class='fa fa-trash' aria-hidden='true'></i>
-    </button>
-</form>
-<button class='btn btn-success border btn-sm w-80'>
-    <a href='../admin/reports/excel.php?type=departments&filter=" . urlencode($row['id']) . "' class='text-white text-decoration-none'>
-      <i class='fa fa-download'></i>
-    </a>
-</button>
+          <button 
+            class='btn btn-danger border btn-sm delete-btn' 
+            data-id='" . htmlspecialchars($row['id']) . "'
+            data-csrf='" . csrf_token() . "'
+          >
+              <i class='fa fa-trash' aria-hidden='true'></i>
+          </button>
 
-<form method='POST' action='../mail_api/forward-mail.php' class='d-inline forwardForm'>
-  <input type='hidden' name='refid' value='" . htmlspecialchars($refid) . "'>
-  <input type='hidden' name='dept_email' value='" . htmlspecialchars($row['email']) . "'>
-  <input type='hidden' name='name' value='" . htmlspecialchars($complaintData['name'] ?? '') . "'>
-  <input type='hidden' name='email' value='" . htmlspecialchars($complaintData['email'] ?? '') . "'>
-  <input type='hidden' name='phone' value='" . htmlspecialchars($complaintData['phone'] ?? '') . "'>
-  <input type='hidden' name='location' value='" . htmlspecialchars($complaintData['location'] ?? '') . "'>
-  <input type='hidden' name='description' value='" . htmlspecialchars($complaintData['complaint'] ?? '') . "'>
-  <input type='hidden' name='image' value='" . htmlspecialchars(basename($complaintData['image'] ?? '')) . "'>
-  <button type='submit' class='btn btn-sm btn-success mt-2'>Forward</button>
-</form>
-
+          <button class='btn btn-success border btn-sm w-80'>
+              <a href='../admin/reports/excel.php?type=departments&filter=" . urlencode($row['id']) . "' class='text-white text-decoration-none'>
+                <i class='fa fa-download'></i>
+              </a>
+          </button>
         </td>
-        
     </tr>
     ";
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
-    $delete = $_POST['delete'];
-    $stmt = $conn->prepare("DELETE FROM departments WHERE name=?");
-    $stmt->bind_param('s', $delete);
-    $stmt->execute();
- echo "<script>location.href=location.href;</script>";
-    exit;
-}
-                ?>
+?>
             </tbody>
         </table>
     </div>
@@ -155,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="" method="POST" id="saveEditDetails">
+        <?= csrf_field() ?>
         <div class="modal-body">
 
           <div class="mb-3">
@@ -211,6 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="../admin/create-department.php" method="POST">
+        <?= csrf_field() ?>
         <div class="modal-body">
           <div class="mb-3">
             <label for="departmentCategory" class="form-label">Select Category</label>
@@ -241,6 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="" method="POST" id="saveDepartmentDetails">
+        <?= csrf_field() ?>
         <div class="modal-body">
 
           <div class="mb-3">
@@ -288,4 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
     <?php
     include '../includes/admin-footer.php';
     ?>
+
+</body>
+</html>
 

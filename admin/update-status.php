@@ -9,6 +9,11 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid request method');
     }
+    
+    // Verify CSRF token
+    if (!CSRFProtection::verifyPostToken()) {
+        throw new Exception('Security validation failed. Please refresh the page and try again.');
+    }
 
     $refid = $_POST['r'] ?? '';
     $note = $_POST['n'] ?? '';

@@ -28,6 +28,7 @@ include '../auth/admin-auth-check.php';
             $admin = $result->fetch_assoc();
         ?>
             <form action="update-admin.php" method="POST">
+                <?= csrf_field() ?>
                 <input type="hidden" name="id" value="<?= $admin['admin_id'] ?>">
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>
@@ -52,6 +53,7 @@ include '../auth/admin-auth-check.php';
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <form id="changePasswordForm">
+                            <?= csrf_field() ?>
                             <div class="modal-header">
                                 <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

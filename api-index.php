@@ -1,4 +1,17 @@
 <?php
+// Main API entry point
+
+// Core Configurations
+require_once 'config/config.php';
+require_once 'api/helpers/auth.php';
+require_once 'api/helpers/rate-limiter.php';
+
+// Apply rate limiting to all API requests
+handle_rate_limiting($conn);
+
+// Set common headers
+header('Content-Type: application/json');
+
 // Simple API landing page for deployment
 header('Content-Type: text/html; charset=UTF-8');
 ?>

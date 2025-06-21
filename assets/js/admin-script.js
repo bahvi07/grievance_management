@@ -1,7 +1,18 @@
 $(document).ready(function() {
-    $('#pendingTable').DataTable();
-    $('#rejectedTable').DataTable();
-    $('#forwardedTable').DataTable();
+    // Debug: Check if jQuery and DataTables are loaded
+    console.log('jQuery version:', $.fn.jquery);
+    console.log('DataTables plugin available:', typeof $.fn.DataTable !== 'undefined');
+    
+    // Initialize DataTables with error handling
+    try {
+        // Initialize all tables
+        $('#pendingTable').DataTable();
+        $('#rejectedTable').DataTable();
+        $('#forwardedTable').DataTable();
+        console.log('DataTables initialized successfully');
+    } catch (error) {
+        console.error('Error initializing DataTables:', error);
+    }
 });
 
 
@@ -45,6 +56,15 @@ $('#search_area').on('input', function() {
         return;
     }
 
+    // Get CSRF token specifically from the forward modal or the meta tag
+    const csrfToken = $('#forwardModal input[name="csrf_token"]').val() || $('meta[name="csrf-token"]').attr('content');
+
+    if (!csrfToken) {
+        console.error('CSRF token not found in meta tag or forward modal.');
+        $('#departmentList').html('<div class="text-danger">Security token missing. Please refresh the page.</div>');
+        return;
+    }
+
     $.ajax({
         url: './searchDepartement.php',
         method: 'POST',
@@ -55,10 +75,19 @@ $('#search_area').on('input', function() {
             name,
             phone,
             location,
-            image
+            image,
+            csrf_token: csrfToken
         },
         success: function(data) {
             $('#departmentList').html(data);
+        },
+        error: function(xhr, status, error) {
+            console.error('Department search error:', error);
+            if (xhr.status === 403) {
+                $('#departmentList').html('<div class="text-danger">Security validation failed. Please refresh the page and try again.</div>');
+            } else {
+                $('#departmentList').html('<div class="text-danger">Error searching departments. Please try again.</div>');
+            }
         }
     });
 });
@@ -107,6 +136,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selectedContainer = document.getElementById(tabMap[tabId]);
                 if (selectedContainer) {
                     selectedContainer.classList.remove('d-none');
+                    
+                    // Reinitialize DataTables for the newly visible table
+                    setTimeout(() => {
+                        const tableId = tabId === 'newComp' ? 'pendingTable' : 
+                                       tabId === 'rejComp' ? 'rejectedTable' : 'forwardedTable';
+                        
+                        if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                            $('#' + tableId).DataTable().draw();
+                        }
+                    }, 100);
                 }
 
                 // Add active class to clicked tab

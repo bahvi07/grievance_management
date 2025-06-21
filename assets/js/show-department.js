@@ -3,16 +3,14 @@ $(document).ready(function () {
 
 // Auto-filter when category changes
 $('#category').on('change', function () {
-    const category = $('#category').val().toLowerCase();
-    const area = $('#area').val().toLowerCase();
-    table.search(category + ' ' + area).draw();
+    const category = $(this).val(); // Keep case for filtering if needed, or use .toLowerCase()
+    table.column(1).search(category).draw();
 });
 
 // Auto-filter as user types in area input
 $('#area').on('input', function () {
-    const category = $('#category').val().toLowerCase();
-    const area = $('#area').val().toLowerCase();
-    table.search(category + ' ' + area).draw();
+    const area = $(this).val();
+    table.column(2).search(area).draw();
 });
 
     // Edit modal script
@@ -36,28 +34,69 @@ $('#area').on('input', function () {
         $('#edit_email').val(email);
     });
 
-});
+    // New, improved delete functionality using AJAX
+    $('#departmentTable tbody').on('click', '.delete-btn', function (e) {
+        e.preventDefault();
+        const btn = $(this);
+        const departmentId = btn.data('id');
+        const csrfToken = btn.data('csrf');
+        const row = btn.closest('tr');
 
-// alert for deleteing department
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".delete-form").forEach(form => {
-        form.addEventListener("submit", function (e) {
-            e.preventDefault(); // Prevent immediate form submit
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This department will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting...',
+                    text: 'Please wait while the department is being removed.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This department will be deleted!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#FD3A69',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // Submit the form manually
-                }
-            });
+                fetch('../admin/delete_department.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: departmentId,
+                        csrf_token: csrfToken
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.close();
+                        // Use DataTables API to remove the row for a smooth animation
+                        table.row(row).remove().draw(false);
+                        
+                        toastr.success(data.message || 'Department deleted successfully!');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Deletion Failed',
+                            text: data.message || 'An unknown error occurred.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Deletion error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'A connection error occurred. Please try again.'
+                    });
+                });
+            }
         });
     });
 });

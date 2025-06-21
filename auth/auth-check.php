@@ -1,7 +1,7 @@
 <?php
-require '../config/session-config.php';
+require_once '../config/session-config.php';
 startSecureSession();
-require '../config/config.php';
+require_once '../config/config.php';
 
 if (!validateSession()) {
     header("Location: ../login.php");

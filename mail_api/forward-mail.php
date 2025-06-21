@@ -1,8 +1,9 @@
 <?php
-require_once '../phpmailer/src/Exception.php';
-require_once '../phpmailer/src/PHPMailer.php';
-require_once '../phpmailer/src/SMTP.php';
-require __DIR__ . '/../vendor/autoload.php';
+require_once '../config/session-config.php';
+startSecureSession();
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once '../auth/admin-auth-check.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -10,8 +11,6 @@ use PHPMailer\PHPMailer\Exception;
 // Load environment variables from .env file
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
-
-require '../config/config.php';
 
 // Email configuration
 $mail_host = $_ENV['MAIL_HOST'];
@@ -41,7 +40,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = $data['message'] ?? '';
         $attachments = $data['attachments'] ?? [];
     } else {
-        // Handle form submission
+        // Handle form submission - Verify CSRF token
+        if (!CSRFProtection::verifyPostToken()) {
+            echo "<!DOCTYPE html>
+            <html>
+            <head>
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+            </head>
+            <body>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Security Error!',
+                    text: 'Security validation failed. Please refresh the page and try again.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '../admin/complaints.php';
+                });
+            </script>
+            </body>
+            </html>";
+            exit;
+        }
+        
         $to = $_POST['dept_email'] ?? '';
         $refid = $_POST['refid'] ?? '';
         $name = $_POST['name'] ?? 'Unknown';
@@ -193,8 +214,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </html>";
         }
     } catch (Exception $e) {
+        error_log('Mail sending failed: ' . $e->getMessage(), 3, LOG_FILE); // Log the actual error
         if (strpos($contentType, 'application/json') !== false) {
-            echo json_encode(['success' => false, 'message' => 'Email could not be sent. Error: ' . $mail->ErrorInfo]);
+            echo json_encode(['success' => false, 'message' => 'Email could not be sent. Please check logs for details.']);
         } else {
             echo "<!DOCTYPE html>
             <html>

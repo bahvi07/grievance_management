@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once '../config/session-config.php';
+startSecureSession();
 include '../config/config.php';
 header('Content-Type: application/json');
 
@@ -7,7 +8,12 @@ $response = ['success' => false, 'message' => ''];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $editPhone = $_POST['edit-phone'];
+        // Verify CSRF token
+        if (!CSRFProtection::verifyPostToken()) {
+            throw new Exception('Security validation failed. Please refresh the page and try again.');
+        }
+        
+        $editPhone = $_POST['newPhone'];
         $oldPhone = $_SESSION['user_phone'];
 
         $stmt = $conn->prepare('UPDATE complaints SET phone=? WHERE phone=?');
@@ -28,7 +34,8 @@ try {
         throw new Exception('Invalid request method');
     }
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
+    error_log("Failed to update phone number: " . $e->getMessage(), 3, LOG_FILE);
+    $response['message'] = 'Failed to update phone number. Please try again later.';
 }
 
 echo json_encode($response);

@@ -1,7 +1,8 @@
 <?php
-session_start();
+require_once '../config/session-config.php';
+startSecureSession();
 ob_start(); // Buffer output to prevent accidental whitespace/errors
-require '../config/config.php';
+require_once '../config/config.php';
 header('Content-Type: application/json');
 error_reporting(0);
 $response = ['success' => false, 'message' => ''];
@@ -10,6 +11,12 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid Request Method');
     }
+    
+    // Verify CSRF token
+    if (!CSRFProtection::verifyPostToken()) {
+        throw new Exception('Security validation failed. Please refresh the page and try again.');
+    }
+    
     $category = isset($_POST['category']) ? htmlspecialchars(trim($_POST['category'])) : '';
     $deptName = isset($_POST['name']) ? htmlspecialchars(trim($_POST['name'])) : '';
     $email = isset($_POST['email']) ? filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL) : '';
@@ -44,8 +51,8 @@ try {
     }
 
 } catch (Exception $e) {
-    error_log($e->getMessage(), 3, 'logs/error.log'); 
-    $response['message'] = $e->getMessage();
+    error_log($e->getMessage(), 3, LOG_FILE); 
+    $response['message'] = 'An error occurred while adding the department. Please try again.';
 }
 
 // Ensure no output before this

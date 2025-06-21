@@ -1,23 +1,13 @@
-  let dt;
-
-function initDataTable() {
-  if (window.innerWidth >= 768) {
-    dt = new DataTable('#myComplainTable', {
-      responsive: true,
-      scrollX: true
-    });
-  } else {
-    // Ensure DataTable is destroyed on mobile
-    if ($.fn.DataTable.isDataTable('#myComplainTable')) {
-      dt.destroy();
-    }
-    // Add mobile-specific classes
+// Simple table styling for mobile responsiveness
+function initTable() {
+  if (window.innerWidth < 768) {
+    // Add mobile-specific classes for better mobile display
     $('#myComplainTable').addClass('table table-responsive');
   }
 }
 
 // Initial setup
-initDataTable();
+initTable();
 
 // Handle resize
-window.addEventListener('resize', initDataTable);
+window.addEventListener('resize', initTable);

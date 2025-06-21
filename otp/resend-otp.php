@@ -1,8 +1,8 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
-require '../config/config.php';
+require_once '../config/config.php';
 header('Content-Type: application/json');
 
 // --- Configuration ---
@@ -103,7 +103,7 @@ $stmt->bind_param("sss", $phone, $otp, $expires_at);
 if ($stmt->execute()) {
     // ✅ NEW: Log the bypass reason for debugging
     if ($bypass_cooldown) {
-        error_log("OTP resend bypassed cooldown for phone: $phone (failed verification)");
+        error_log("OTP resend bypassed cooldown for phone: $phone (failed verification)", 3, LOG_FILE);
     }
     
     echo json_encode([

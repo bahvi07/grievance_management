@@ -1,5 +1,5 @@
 <?php
-require '../config/session-config.php';
+require_once '../config/session-config.php';
 include '../config/config.php';
 
 header('Content-Type: application/json');

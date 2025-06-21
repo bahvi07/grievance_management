@@ -1,8 +1,9 @@
 <?php
 // send_otp.php
-session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once '../config/session-config.php';
+startSecureSession();
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 require_once '../phpmailer/src/Exception.php';
 require_once '../phpmailer/src/PHPMailer.php';
 require_once '../phpmailer/src/SMTP.php';
@@ -10,7 +11,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../config/config.php';
+require_once '../config/config.php';
 header('Content-Type: application/json');
 
 // Load environment variables from .env file
@@ -22,6 +23,11 @@ $response = ['success' => false, 'message' => ''];
 try {
     if($_SERVER['REQUEST_METHOD'] !== 'POST'){
         throw new Exception('Invalid Request Method');
+    }
+    
+    // Verify CSRF token from JSON request
+    if (!CSRFProtection::verifyJsonToken()) {
+        throw new Exception('Security validation failed. Please refresh the page and try again.');
     }
     
     // Get JSON data from request body
@@ -102,9 +108,10 @@ try {
     ];
     
 } catch (Exception $e) {
+    error_log('Failed to send OTP code: ' . $e->getMessage(), 3, LOG_FILE);
     $response = [
         'success' => false, 
-        'message' => 'Email could not be sent. Error: ' . $e->getMessage()
+        'message' => 'Could not send verification code. Please try again later.'
     ];
 }
 

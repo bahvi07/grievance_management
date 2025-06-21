@@ -6,6 +6,13 @@ include '../auth/admin-auth-check.php';
 $response = ['success' => false, 'message' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verify CSRF token
+    if (!CSRFProtection::verifyPostToken()) {
+        $response['message'] = "Security validation failed. Please refresh the page and try again.";
+        echo json_encode($response);
+        exit;
+    }
+    
     // Sanitize and validate inputs
     $id = $_POST['id'] ?? '';
     $category = trim($_POST['category'] ?? '');

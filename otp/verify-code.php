@@ -1,9 +1,10 @@
 <?php
 // send_otp.php
-session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-require '../config/config.php';
+require_once '../config/session-config.php';
+startSecureSession();
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+require_once '../config/config.php';
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'message' => ''];
@@ -11,6 +12,11 @@ $response = ['success' => false, 'message' => ''];
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid Method');
+    }
+    
+    // Verify CSRF token from JSON request
+    if (!CSRFProtection::verifyJsonToken()) {
+        throw new Exception('Security validation failed. Please refresh the page and try again.');
     }
 
     $json = file_get_contents('php://input');
@@ -55,9 +61,10 @@ try {
         }
     }
 } catch (Exception $e) {
+    error_log("OTP verification error: " . $e->getMessage(), 3, LOG_FILE);
     $response = [
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'An error occurred during verification. Please try again.'
     ];
 }
 

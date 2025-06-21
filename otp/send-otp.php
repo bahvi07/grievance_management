@@ -1,9 +1,9 @@
 <?php
 // send_otp.php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
-require '../config/config.php';
+require_once '../config/config.php';
 header('Content-Type: application/json');
 
 define('MAX_ATTEMPTS', 5);
@@ -23,7 +23,7 @@ if (empty($phone) || !preg_match('/^[6-9]\d{9}$/', $phone)) {
 $ip_address = $_SERVER['REMOTE_ADDR'];
 
 // --- Lockout Check ---
-$stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE user_name = ? OR ip_address = ? ORDER BY id DESC LIMIT 1");
+$stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? OR ip_address = ? ORDER BY id DESC LIMIT 1");
 $stmt->bind_param("ss", $phone, $ip_address);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -37,31 +37,6 @@ if ($attempt && $attempt['is_locked'] && strtotime($attempt['lock_expiry']) > ti
     exit;
 }
 
-// --- Increment attempt count for new login ---
-if ($attempt) {
-    $new_count = $attempt['attempt_count'] + 1;
-    if ($new_count >= MAX_ATTEMPTS) {
-        $lock_expiry = date('Y-m-d H:i:s', strtotime("+".LOCK_DURATION_MINUTES." minutes"));
-        $lock = $conn->prepare("UPDATE user_login_attempts SET attempt_count = 0, is_locked = 1, lock_expiry = ? WHERE id = ?");
-        $lock->bind_param("si", $lock_expiry, $attempt['id']);
-        $lock->execute();
-        echo json_encode(['status' => 'error', 'message' => "Too many attempts. Account locked for ".LOCK_DURATION_MINUTES." minutes."]);
-        exit;
-    } else {
-        $inc = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ? WHERE id = ?");
-        $inc->bind_param("ii", $new_count, $attempt['id']);
-        $inc->execute();
-    }
-} else {
-    // First attempt
-    $ins = $conn->prepare("INSERT INTO user_login_attempts (user_name, ip_address, attempt_count, is_locked) VALUES (?, ?, 1, 0)");
-    $ins->bind_param("ss", $phone, $ip_address);
-    $ins->execute();
-}
-
-$otp_hash = password_hash($otp, PASSWORD_DEFAULT);
-$is_used = 0;
-
 // Check table
 $tableCheck = $conn->query("SHOW TABLES LIKE 'otp_requests'");
 if (!$tableCheck || $tableCheck->num_rows == 0) {
@@ -69,10 +44,36 @@ if (!$tableCheck || $tableCheck->num_rows == 0) {
     exit;
 }
 
+// First, insert OTP into otp_requests table
+$otp_hash = password_hash($otp, PASSWORD_DEFAULT);
+$is_used = 0;
+
 $stmt = $conn->prepare("INSERT INTO otp_requests (phone, otp, is_used) VALUES (?, ?, ?)");
 $stmt->bind_param("ssi", $phone, $otp_hash, $is_used);
 
 if ($stmt->execute()) {
+    // Now handle login attempts tracking after OTP is successfully stored
+    if ($attempt) {
+        $new_count = $attempt['attempt_count'] + 1;
+        if ($new_count >= MAX_ATTEMPTS) {
+            $lock_expiry = date('Y-m-d H:i:s', strtotime("+".LOCK_DURATION_MINUTES." minutes"));
+            $lock = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, is_locked = 1, lock_expiry = ?, last_attempt = NOW() WHERE id = ?");
+            $lock->bind_param("isi", $new_count, $lock_expiry, $attempt['id']);
+            $lock->execute();
+            echo json_encode(['status' => 'error', 'message' => "Too many attempts. Account locked for ".LOCK_DURATION_MINUTES." minutes."]);
+            exit;
+        } else {
+            $inc = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
+            $inc->bind_param("ii", $new_count, $attempt['id']);
+            $inc->execute();
+        }
+    } else {
+        // First attempt
+        $ins = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, is_locked, last_attempt) VALUES (?, ?, 1, 0, NOW())");
+        $ins->bind_param("ss", $phone, $ip_address);
+        $ins->execute();
+    }
+    
     echo json_encode(['status' => 'success', 'otp' => $otp]); // For development only, remove `otp` in production
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to store OTP']);

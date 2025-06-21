@@ -7,14 +7,20 @@ header('Content-Type: application/json');
 $response = ['success' => false, 'message' => ''];
 
 // Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid request Method!');
     }
+    
+    // Verify CSRF token
+    if (!CSRFProtection::verifyPostToken()) {
+        throw new Exception('Security validation failed. Please refresh the page and try again.');
+    }
+    
     $id = $_POST['id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -38,9 +44,8 @@ try {
         throw new Exception('Failed to update Admin Details: ' . $stmt->error);
     }
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
-    $response['error_line'] = $e->getLine();
-    $response['error_file'] = $e->getFile();
+    error_log("Error in update-admin.php: " . $e->getMessage(), 3, LOG_FILE);
+    $response['message'] = 'An error occurred while updating admin details. Please try again.';
 }
 
 echo json_encode($response);

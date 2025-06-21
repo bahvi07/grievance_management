@@ -9,24 +9,37 @@ document.addEventListener('DOMContentLoaded', function() {
             const admin_id = document.getElementById('adminId');
             const id = admin_id ? admin_id.value : '';
             
-            codeBtn.innerText="Sending....";
-            codeBtn.disabled=true;
+            // Disable button and show loader
+            codeBtn.disabled = true;
+            const originalText = codeBtn.innerHTML;
+            codeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+            
             if (!email) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'Email is required.'
                 });
+                // Re-enable button
+                codeBtn.disabled = false;
+                codeBtn.innerHTML = originalText;
                 return;
             }
             
             try {
+                const form = document.getElementById('changePasswordForm');
+                const csrfToken = form.querySelector('input[name="csrf_token"]').value;
+                
                 const response = await fetch('../otp/send-code.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email, id })
+                    body: JSON.stringify({ 
+                        email, 
+                        id,
+                        csrf_token: csrfToken 
+                    })
                 });
                 
                 // Check if response is JSON
@@ -37,14 +50,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const result = await response.json();
                 if (result.success) {
-                  codeBtn.style.display='none';
-                  
+                    codeBtn.style.display = 'none';
+                    
                     // Enable the verification code input
                     const verificationCodeInput = document.getElementById('verificationCode');
                     document.getElementById('newPassword').disabled = false;
                     document.getElementById('confirmPassword').disabled = false;
                     document.getElementById('reset_pswd').disabled = false;
-                    
                     
                     if (verificationCodeInput) verificationCodeInput.disabled = false;
                 } else {
@@ -53,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: 'Error',
                         text: result.message || 'Failed to send code.'
                     });
+                    // Re-enable button
+                    codeBtn.disabled = false;
+                    codeBtn.innerHTML = originalText;
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -61,72 +76,81 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: 'Error',
                     text: 'An error occurred. Please try again.'
                 });
+                // Re-enable button
+                codeBtn.disabled = false;
+                codeBtn.innerHTML = originalText;
             }
         });
     }
 
     if(resetBtn){
         resetBtn.addEventListener('click',async(e)=>{
-            resetBtn.disabled=true;
-            resetBtn.innerHTML='Wait...';
-const form=document.getElementById('changePasswordForm');
-// Build a JS object from form fields
-const verificationCode = document.getElementById('verificationCode').value;
-const newPassword = document.getElementById('newPassword').value;
-const confirmPassword = document.getElementById('confirmPassword').value;
+            // Disable button and show loader
+            resetBtn.disabled = true;
+            const originalText = resetBtn.innerHTML;
+            resetBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+            
+            const form=document.getElementById('changePasswordForm');
+            // Build a JS object from form fields
+            const verificationCode = document.getElementById('verificationCode').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const csrfToken = form.querySelector('input[name="csrf_token"]').value;
 
-const payload = {
-    verificationCode,
-    newPassword,
-    confirmPassword
-};
+            const payload = {
+                verificationCode,
+                newPassword,
+                confirmPassword,
+                csrf_token: csrfToken
+            };
 
-try{
-    const res=await fetch('../otp/verify-code.php',{
-method:'POST',
-headers: {
-    'Content-Type': 'application/json'
-},
-body:JSON.stringify(payload),
-    });
-    const data=await res.json();
-    if(data.success){
-        Swal.fire({
-icon:'success',
-title:'Code verified',
-text:'Your password is updated successfully'
-        }).then(() => {
-            // Optionally reset form and close modal
-            document.getElementById('changePasswordForm').reset();
-             bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-            window.location.reload();
+            try{
+                const res=await fetch('../otp/verify-code.php',{
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body:JSON.stringify(payload),
+                });
+                const data=await res.json();
+                if(data.success){
+                    Swal.fire({
+                        icon:'success',
+                        title:'Code verified',
+                        text:'Your password is updated successfully'
+                    }).then(() => {
+                        // Optionally reset form and close modal
+                        document.getElementById('changePasswordForm').reset();
+                         bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                        window.location.reload();
+                    });
+                    resetBtn.innerHTML = 'Successfully Updated';
+                }else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to reset Password.'
+                    }).then(() => {
+                        // Optionally clear password fields and focus
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                        document.getElementById('newPassword').focus();
+                    });
+                    resetBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred. Please try again.'
+                });
+                resetBtn.innerHTML = originalText;
+            } finally {
+                resetBtn.disabled = false;
+            }
         });
-        resetBtn.innerHTML = 'Successfully Updated';
-    }else {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message || 'Failed to reset Password.'
-        }).then(() => {
-            // Optionally clear password fields and focus
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('newPassword').focus();
-        });
-        resetBtn.innerHTML = 'Change Password';
     }
-} catch (error) {
-    console.error('Error:', error);
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred. Please try again.'
-    });
-    resetBtn.innerHTML = 'Change Password';
-} finally {
-    resetBtn.disabled = false;
-}
-    });}
 
     // Password strength indicator
     const passwordInput = document.getElementById('newPassword');

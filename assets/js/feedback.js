@@ -19,13 +19,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      // Disable button and show loader
+      submitBtn.disabled = true;
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
       try {
+        // Use FormData to include all form fields including CSRF token
+        const formData = new FormData(feedbackForm);
+        
         const response = await fetch('submit-feedback.php', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `feed_u_name=${encodeURIComponent(name)}&feedback=${encodeURIComponent(feedback)}&user_phone=${encodeURIComponent(userPhone)}`
+          body: formData
         });
 
         const result = await response.json();
@@ -43,6 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         toastr.error("An error occurred. Please try again later.");
         console.error(error);
+      } finally {
+        // Re-enable button and restore original text
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
       }
     });
   }

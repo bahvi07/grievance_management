@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     button.addEventListener('click', () => {
       const refid = button.getAttribute('data-resid');
       document.getElementById('resolve_refid').value = refid;
-      console.log('Selected refid:', refid);
     });
   });
 
@@ -23,11 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         const rawText = await response.text();
-        console.log("Raw response:", rawText);
-
-        for (let [key, value] of formData.entries()) {
-          console.log(`${key}: ${value}`);
-        }
 
         let result = {};
         try {

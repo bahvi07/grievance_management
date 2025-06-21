@@ -62,8 +62,24 @@ CREATE TABLE IF NOT EXISTS otp_requests (
     expires_at DATETIME GENERATED ALWAYS AS (DATE_ADD(created_at, INTERVAL 10 MINUTE)) STORED,
     is_used TINYINT(1) DEFAULT 0,
     is_logged_in TINYINT(1) DEFAULT 0,
+    user_token VARCHAR(32),
+    user_name VARCHAR(50),
     INDEX idx_phone (phone),
     INDEX idx_otp (otp)
+);
+
+-- User Login Attempts Table
+CREATE TABLE IF NOT EXISTS user_login_attempts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(15) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 1,
+    is_locked TINYINT(1) DEFAULT 0,
+    lock_expiry TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_name (user_name),
+    INDEX idx_ip_address (ip_address)
 );
 
 -- Feedback Table
@@ -75,5 +91,18 @@ CREATE TABLE IF NOT EXISTS feedback (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- Table for API Rate Limiting
+CREATE TABLE `api_rate_limits` (
+  `ip_address` VARCHAR(45) NOT NULL,
+  `request_count` INT NOT NULL DEFAULT 1,
+  `last_request_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ip_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- End of schema.sql

@@ -1,7 +1,13 @@
 <?php
-session_start();
+// Load session configuration before starting session
+require_once '../config/session-config.php';
+startSecureSession();
+require_once '../config/config.php';
+require_once '../auth/auth-check.php';
+
+// Safely get the refid parameter
+$ref_id = isset($_GET['refid']) ? $_GET['refid'] : '';
 include '../includes/header.php';
-require '../config/config.php';
 ?>
 </head>
 
@@ -19,23 +25,30 @@ require '../config/config.php';
                 <div class="col-lg-8 col-md-10 col-12">
                     <?php
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $refId = isset($_POST['ref']) ? trim($_POST['ref']) : '';
-                        if (empty($refId) || strlen($refId) !== 6) {
-                            echo "<div class='alert alert-danger text-center rounded-3 mt-5'><i class='fas fa-times-circle me-2'></i>Invalid Reference ID. Please enter a 6-digit ID.</div>
+                        // Verify CSRF token
+                        if (!CSRFProtection::verifyPostToken()) {
+                            echo "<div class='alert alert-danger text-center rounded-3 mt-5'><i class='fas fa-times-circle me-2'></i>Security validation failed. Please refresh the page and try again.</div>
                               <div class='card-body text-center'>
     <button class='btn btn-outline-danger rounded-pill px-4' id='return' style='font-weight:600;'><i class='fas fa-arrow-left'></i> Return to Dashboard</button>
   </div>";
                         } else {
-                            $phone=$_SESSION['user_phone'];
-                            $stmt = $conn->prepare("SELECT * FROM complaints WHERE refid=? AND phone=?");
-                            $stmt->bind_param('ss', $refId,$phone);
-                            $stmt->execute();
-                            $result = $stmt->get_result();
+                            $refId = isset($_POST['refid']) ? trim($_POST['refid']) : '';
+                            if (empty($refId) || strlen($refId) !== 6) {
+                                echo "<div class='alert alert-danger text-center rounded-3 mt-5'><i class='fas fa-times-circle me-2'></i>Invalid Reference ID. Please enter a 6-digit ID.</div>
+                                  <div class='card-body text-center'>
+    <button class='btn btn-outline-danger rounded-pill px-4' id='return' style='font-weight:600;'><i class='fas fa-arrow-left'></i> Return to Dashboard</button>
+  </div>";
+                            } else {
+                                $phone=$_SESSION['user_phone'];
+                                $stmt = $conn->prepare("SELECT * FROM complaints WHERE refid=? AND phone=?");
+                                $stmt->bind_param('ss', $refId,$phone);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
 
-                            if ($result->num_rows > 0) {
-                                $row = $result->fetch_assoc();
-                                $badgeClass = strtolower($row['status']) === 'resolved' ? 'success' : (strtolower($row['status']) === 'rejected' ? 'danger' : 'warning');
-                                echo "
+                                if ($result->num_rows > 0) {
+                                    $row = $result->fetch_assoc();
+                                    $badgeClass = strtolower($row['status']) === 'resolved' ? 'success' : (strtolower($row['status']) === 'rejected' ? 'danger' : 'warning');
+                                    echo "
 <div class='card mt-5 shadow-sm border-0 rounded-4'>
   <div class='card-header text-white rounded-top-4' style='background:#F15922; font-weight:600; font-size:1.15rem;'>📄 Complaint Details</div>
   <ul class='list-group list-group-flush'>
@@ -56,11 +69,12 @@ require '../config/config.php';
     <button class='btn btn-outline-danger rounded-pill px-4' id='return' style='font-weight:600;'><i class='fas fa-arrow-left'></i> Return to Dashboard</button>
   </div>
 </div>";
-                            } else {
-                                echo "<div class='alert alert-warning text-center rounded-3 mt-5'><i class='fas fa-info-circle me-2'></i>No complaint found with this Reference ID.</div> 
-                                 <div class='card-body text-center'>
+                                } else {
+                                    echo "<div class='alert alert-warning text-center rounded-3 mt-5'><i class='fas fa-info-circle me-2'></i>No complaint found with this Reference ID.</div> 
+                                     <div class='card-body text-center'>
     <button class='btn btn-outline-danger rounded-pill px-4' id='return' style='font-weight:600;'><i class='fas fa-arrow-left'></i> Return to Dashboard</button>
   </div>";
+                                }
                             }
                         }
                     }

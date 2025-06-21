@@ -1,6 +1,7 @@
 <?php
-require '../config/session-config.php';
+require_once '../config/session-config.php';
 startSecureSession();
+require_once '../config/config.php';
 
 if (!validateSession()) {
     session_unset();

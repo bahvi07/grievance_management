@@ -1,6 +1,7 @@
 <?php
-session_start();
-require '../config/config.php';
+require_once '../config/session-config.php';
+startSecureSession();
+require_once '../config/config.php';
 
 if (isset($_SESSION['user_phone'])) {
     $phone = $_SESSION['user_phone'];

@@ -1,7 +1,11 @@
 <?php 
-session_start();
-include '../includes/header.php';
-require '../config/config.php';
+// Load session configuration before starting session
+require_once '../config/session-config.php';
+startSecureSession();
+require_once '../config/config.php';
+require_once '../auth/auth-check.php';
+$title = "My Complaints";
+
 if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
   echo "  <script>
     alert('NOT LOGGED IN');
@@ -11,6 +15,13 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
     exit;
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?php echo $title; ?> - Vidhayak Seva Kendra</title>
+  <?php include '../includes/header.php'; ?>
 </head>
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
 <!-- Top Header Bar -->
@@ -41,10 +52,17 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
       <tbody>
         <?php
         $phone = $_SESSION['user_phone'];
+        
+        // Debug information - remove this after fixing
+        echo "<!-- Debug: Session phone = " . htmlspecialchars($phone) . " -->";
+        
         $stmt = $conn->prepare("SELECT * FROM complaints WHERE phone=?");
         $stmt->bind_param('s', $phone);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        // Debug: Show query results count
+        echo "<!-- Debug: Found " . $result->num_rows . " complaints -->";
 
         if ($result->num_rows > 0) {
           while ($row = $result->fetch_assoc()) {
@@ -62,7 +80,7 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
                   </tr>";
           }
         } else {
-          echo "<tr><td colspan='9' class='text-center'>No complaints found for your number.</td></tr>";
+          echo "<tr><td colspan='9' class='text-center'>No complaints found for your number: " . htmlspecialchars($phone) . "</td></tr>";
         }
         ?>
       </tbody>

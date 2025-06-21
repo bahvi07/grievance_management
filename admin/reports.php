@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once '../config/session-config.php';
+startSecureSession();
 include '../includes/admin-header.php';
 include '../config/config.php';
 include '../includes/admin-nav.php';

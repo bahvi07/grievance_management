@@ -264,13 +264,33 @@ footer {
 }
 
 #changePasswordModal .btn-primary:hover {
-    background-color: #e06c0d;
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+#changePasswordModal .btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+#changePasswordModal .btn-primary:disabled:hover {
+    background: #ccc;
+    transform: none;
+    box-shadow: none;
+}
+
+#changePasswordModal .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
 }
 
 #changePasswordModal small.text-muted {
-    color: #666 !important;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-    display: block;
+    font-size: 0.875rem;
+    color: #6c757d;
 }
 

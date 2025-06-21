@@ -277,6 +277,9 @@ include '../auth/admin-auth-check.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Hidden CSRF token for AJAX requests -->
+                    <?= csrf_field() ?>
+                    
                     <input type="hidden" id="forward_category">
                     <input type="hidden" id="forward_refid">
                     <input type="hidden" id="forward_name">
@@ -302,6 +305,7 @@ include '../auth/admin-auth-check.php';
         <div class="modal-dialog">
             <div class="modal-content border-0 shadow">
                 <form id="resolveForm" method="POST">
+                    <?= csrf_field() ?>
                     <div class="modal-header bg-success text-white">
                         <h5 class="modal-title" id="resolveLabel">Mark Complaint as Resolved</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

@@ -1,3 +1,4 @@
+
 <style>
   .sidebar {
     height: 100vh;
@@ -106,5 +107,3 @@ $pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] 
     </li>
   </ul>
 </div>
-
-

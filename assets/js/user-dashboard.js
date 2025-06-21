@@ -29,12 +29,10 @@ if (submitBtn) {
       });
 
       const rawText = await response.text(); // Read once
-      console.log("Raw response:", rawText);
 
       let result = {};
       try {
         result = JSON.parse(rawText);
-        console.log("Parsed JSON:", result);
       } catch (parseError) {
         throw new Error("Invalid JSON response from server");
       }
@@ -156,7 +154,6 @@ if (updateBtn) {
       });
 
       const result = await response.json(); // ✅ FIX: parse as JSON, not stringify
-console.log(result.message);
       if (result.success) {
         Swal.fire({
           icon: "success",

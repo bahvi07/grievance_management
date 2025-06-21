@@ -1,6 +1,7 @@
-<?php 
-session_start();
-require '../config/config.php';
+<?php
+require_once '../config/session-config.php';
+startSecureSession();
+require_once '../config/config.php';
 
 // Check if already logged in via session
 if (isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'] === true) {
@@ -117,8 +118,8 @@ if (isset($_COOKIE['user_token'])) {
 <!-- Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+<!-- DataTables JS - Official -->
+<script src="../assets/datatables/datatables.min.js"></script>
 <!--Custom Js-->
 <script src="../assets/js/otp.js"></script>
 </body>

@@ -1,6 +1,14 @@
-<?php include '../includes/header.php';
-include '../config/config.php';
-include '../auth/auth-check.php';
+<?php 
+// Start session first before any CSRF operations
+require_once '../config/session-config.php';
+startSecureSession();
+
+// Include config for CSRF functions
+require_once '../config/config.php';
+
+// Use include_once to prevent multiple inclusions and remove the redundant config include
+include_once '../includes/header.php';
+include_once '../auth/auth-check.php';
 ?>
 </head>
 
@@ -104,7 +112,7 @@ Feedback</a></li>
         </div>
         <div class="modal-body">
           <form method="post" enctype="multipart/form-data" id="complaintForm">
-
+            <?= csrf_field() ?>
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="name" class="form-label">Name:</label>
@@ -171,10 +179,11 @@ Feedback</a></li>
         </div>
 
         <form action="./viewStatus.php" id="viewStatus" method="post">
+          <?= csrf_field() ?>
           <div class="modal-body">
             <div class="mb-3">
-              <label for="ref" class="form-label"><strong>Reference ID</strong></label>
-              <input type="text" class="form-control" id="ref" name="ref" placeholder="Enter your Ref ID" required>
+              <label for="refid" class="form-label">Reference ID:</label>
+              <input type="text" class="form-control" id="refid" name="refid" required>
             </div>
           </div>
 
@@ -201,6 +210,7 @@ Feedback</a></li>
 
         <!-- Modal Form -->
         <form action="" method="POST" id="deleteForm">
+          <?= csrf_field() ?>
           <div class="modal-body">
             <div class="text-center">
               <i class="fas fa-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
@@ -238,21 +248,18 @@ Feedback</a></li>
         </div>
         <div class="modal-body">
           <form action="" method="POST" id="editPhoneForm">
-            <input type="tel" id="phone" name="edit-phone"
-              class="form-control border-0 border-bottom border-black rounded-0 bg-transparent mb-5"
-              placeholder="+91 9900000000"
-              maxlength="10"
-              pattern="^[6-9]\d{9}$"
-              title="Please enter a valid 10-digit phone number starting with 6-9"
-              required>
-          
-          </form>
-              
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="updatePhone">Update</button>
-        </div>
+            <?= csrf_field() ?>
+            <div class="mb-3">
+              <label for="newPhone" class="form-label">New Phone Number:</label>
+              <input type="tel" class="form-control" id="newPhone" name="newPhone" pattern="^[6-9]\d{9}$" maxlength="10" required>
+              <small class="text-muted">Enter a valid 10-digit phone number starting with 6-9</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="updatePhone">Update</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -262,6 +269,7 @@ Feedback</a></li>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form id="feedbackForm" method="POST" action="">
+        <?= csrf_field() ?>
         <div class="modal-header" style="background:#F15922;">
           <h5 class="modal-title text-white" id="feedbackLabel">
             <i class="fa-solid fa-comments me-2"></i>Feedback
@@ -322,22 +330,47 @@ Feedback</a></li>
         const result = JSON.parse(text);
 
         if (result.success) {
-          // Close modal and redirect
+          // Close modal
           const modal = bootstrap.Modal.getInstance(document.getElementById('deleteAcModal'));
           modal.hide();
 
-          // Redirect after modal closes
-          setTimeout(() => {
-            window.location.href = '../index.php';
-          }, 300);
+          // Clear any client-side storage
+          localStorage.clear();
+          sessionStorage.clear();
+
+          // Clear any cookies that might be set by JavaScript
+          document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+          });
+
+          // Show success message and redirect
+          Swal.fire({
+            icon: 'success',
+            title: 'Account Deleted',
+            text: result.message,
+            timer: 2000,
+            showConfirmButton: false
+          }).then(() => {
+            // Force redirect to login page
+            window.location.replace('../auth/login.php');
+          });
+
         } else {
-          // Only show error if deletion fails
-          alert('Error: ' + (result.message || 'Unable to delete account'));
+          // Show error if deletion fails
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: result.message || 'Unable to delete account'
+          });
         }
 
       } catch (error) {
         console.error("Error:", error);
-        alert('Network error. Please try again.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Network Error',
+          text: 'Please try again.'
+        });
       } finally {
         delBtn.disabled = false;
         delBtn.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Yes, Delete My Account';

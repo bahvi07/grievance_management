@@ -329,14 +329,38 @@ main {
 }
 
 #feedback .btn-primary:hover {
-  opacity: 0.9;
+  background: #d1451e;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(241, 89, 34, 0.3);
+}
+
+#feedback .btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+#feedback .btn-primary:disabled:hover {
+  background: #ccc;
+  transform: none;
+  box-shadow: none;
+}
+
+#feedback .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
 }
 
 #feedback .btn-secondary {
-  border-radius: 50px;
-  padding: 0.6rem 1.5rem;
+  background: #6c757d;
+  border: none;
+  border-radius: 25px;
+  padding: 0.5rem 1.5rem;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 /* Mobile Styles */
@@ -394,4 +418,25 @@ main {
   font-size:1.25rem ;
 }
 
+}
+
+/* Delete Account Modal Button Styles */
+#deleteAcModal .btn-danger:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+#deleteAcModal .btn-danger:disabled:hover {
+  background: #ccc;
+  transform: none;
+  box-shadow: none;
+}
+
+#deleteAcModal .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
 }
