@@ -3,6 +3,18 @@ include '../includes/admin-header.php';
 include '../config/config.php';
 include '../includes/admin-nav.php';
 include '../auth/admin-auth-check.php';
+
+// Handle complaint rejection before rendering the table
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rejId'])) {
+    $rej = $_POST['rejId'];
+    $stmt = $conn->prepare("UPDATE complaints SET status='reject' WHERE refid=?");
+    $stmt->bind_param('i', $rej);
+    if ($stmt->execute()) {
+        // Optional: Redirect to avoid form resubmission on refresh
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
+}
 ?>
 </head>
 
@@ -107,13 +119,6 @@ include '../auth/admin-auth-check.php';
             </form>
         </td>
     </tr>";
-                        }
-
-                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                            $rej = $_POST['rejId'];
-                            $stmt = $conn->prepare("UPDATE complaints SET status='reject' WHERE refid=?");
-                            $stmt->bind_param('i', $rej);
-                            $stmt->execute();
                         }
                         ?>
                     </tbody>

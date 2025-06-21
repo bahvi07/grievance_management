@@ -34,19 +34,6 @@ include '../auth/admin-auth-check.php';
                     </span>
                 </div>
 
-                <!-- Pending Complaints -->
-                <div class="status-card bg-secondary text-white">
-                    <i class="fas fa-hourglass-half fa-2x mb-2"></i>
-                    <h5>Pending</h5>
-                    <span class="count"> <?php
-                                            $currentPage = basename($_SERVER['PHP_SELF']);
-                                            $sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='pending'";
-                                            $result = mysqli_query($conn, $sql);
-                                            $pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-                                            echo $pendingCount;
-                                            ?></span>
-                </div>
-
                 <!-- Resolved Complaints -->
                 <div class="status-card bg-success text-white">
                     <i class="fas fa-check-circle fa-2x mb-2"></i>

@@ -33,7 +33,7 @@ include_once '../auth/auth-check.php';
       <li><a class="nav-link" href="#" data-bs-target="#edit-profile" data-bs-toggle="modal"><i class="fas fa-user-edit"></i> Edit Phone</a></li>
       <li><a href="#" class="nav-link" data-bs-target="#feedback" data-bs-toggle="modal"> <i class="fa-solid fa-comments"></i>
 Feedback</a></li>
-      <li><a class="nav-link" href="../delete_ac.php"><i class="fas fa-trash-alt"></i> Delete Account</a></li>
+      <li><a class="nav-link" href="#"  data-bs-toggle="modal" data-bs-target="#deleteAcModal"><i class="fas fa-trash-alt"></i> Delete Account</a></li>
       <li><a class="nav-link" href="../auth/logout.php"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
     </ul>
   </div>
