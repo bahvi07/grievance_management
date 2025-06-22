@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
   <!-- Datatables -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.min.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/datatables/datatables.min.css">
 
   <!-- Custom Login CSS -->
-  <link rel="stylesheet" href="../assets/css/user-login.css">
-  <link rel="stylesheet" href="../assets/css/user-dashboard.css">
-  <link rel="stylesheet" href="../assets/css/mycomp.css">
-  <link rel="stylesheet" href="../assets/css/viewStatus.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/user-login.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/user-dashboard.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/mycomp.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/viewStatus.css">

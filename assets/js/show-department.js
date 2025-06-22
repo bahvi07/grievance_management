@@ -1,5 +1,21 @@
 $(document).ready(function () {
-    const table = $('#departmentTable').DataTable();
+    const table = $('#departmentTable').DataTable({
+        "pageLength": 10,
+        "order": [[ 0, "asc" ]], // Sort by first column (Sr No.)
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries per page",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        }
+    });
 
 // Auto-filter when category changes
 $('#category').on('change', function () {

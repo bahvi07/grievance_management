@@ -1,15 +1,14 @@
 <?php
+include '../includes/admin-init.php';
 include '../includes/admin-header.php';
-include '../config/config.php';
 include '../includes/admin-nav.php';
-include '../auth/admin-auth-check.php';
 ?>
 </head>
 
 <body>
     <div class="top-head bg-light">
         <div class="brand">
-            <img src="../assets/images/general_images/Bjplogo.jpg" alt="Logo">
+            <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" alt="Logo">
             Admin Dashboard
         </div>
         <div class="">
@@ -18,7 +17,7 @@ include '../auth/admin-auth-check.php';
     </div>
     <div class="dashboard-content row">
         <div class="col main-content">
-            <div class="card-container d-flex flex-wrap gap-4 p-4 justify-content-center">
+            <div class="card-container">
                 <!-- New Complaints -->
                 <div class="status-card bg-primary text-white">
                     <i class="fas fa-envelope-open-text fa-2x mb-2"></i>
@@ -63,7 +62,7 @@ include '../auth/admin-auth-check.php';
                 </div>
 
                 <!-- Forwarded Complaints -->
-                <div class="status-card bg-warning text-dark">
+                <div class="status-card bg-warning text-light">
                     <i class="fas fa-share-square fa-2x mb-2"></i>
                     <h5>Forwarded</h5>
                     <span class="count">
@@ -77,20 +76,20 @@ include '../auth/admin-auth-check.php';
                     </span>
                 </div>
             </div>
-            <div class="row" style="margin-left: 25px;">
+            <div class="chart-container">
                 <!-- Chart Container -->
-                <div class="col-7 bg-light m-2" style="border-radius: 20px;">
-                    <canvas id="resolvedChart" width="600" height="300"></canvas>
+                <div class="bg-light" style="border-radius: 20px;">
+                    <canvas id="resolvedChart"></canvas>
                 </div>
                 <!-- Chart Container -->
-                <div class="col-4 bg-light m-2" style="border-radius: 20px;">
-                    <canvas id="complaintByArea" width="400" height="400"></canvas>
+                <div class="bg-light" style="border-radius: 20px;">
+                    <canvas id="complaintByArea" width="350" height="350"></canvas>
                 </div>
-                <div class="col-7 bg-light m-2" style="border-radius: 20px;" id="recentTable">
-                    <h4 class="pt-2 mb-3">Recently Resolved Complaints</h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle" id="recentResolvedTable">
-                            <thead class="table-dark text-center">
+                <div class="bg-light" style="border-radius: 20px;" id="recentTable">
+                    <h4 class="pt-2 mb-3 text-center">Recently Resolved Complaints</h4>
+                    <div class="table-responsive bg-light rounded shadow-sm p-3">
+                        <table class="table table-hover table-borderless" id="recentResolvedTable">
+                            <thead class="table-dark">
                                 <tr>
                                     <th>Ref ID</th>
                                     <th>User Name</th>
@@ -127,8 +126,8 @@ include '../auth/admin-auth-check.php';
                         </table>
                     </div>
                 </div>
-                <div class="col-4 bg-light m-2" style="border-radius: 20px;">
-                    <canvas id="resolvedUnresolvedChart" width="600" height="350"></canvas>
+                <div class="bg-light" style="border-radius: 20px;">
+                    <canvas id="resolvedUnresolvedChart" width="350" height="350"></canvas>
                 </div>
 
             </div>
@@ -142,7 +141,7 @@ include '../auth/admin-auth-check.php';
                     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
                 }
 
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','July','Aug','Sept','Oct','Nov','Dec'];
                 const resolvedCounts = months.map(() => Math.floor(Math.random() * 50 + 10));
                 const barColors = months.map(() => getRandomColor(0.7));
                 const borderColors = barColors.map(color => color.replace('0.7', '1'));
@@ -211,7 +210,7 @@ include '../auth/admin-auth-check.php';
                 }]
             },
             options: {
-                responsive: true,
+                responsive: false,
                 plugins: {
                     title: {
                         display: true,
@@ -256,7 +255,7 @@ include '../auth/admin-auth-check.php';
                 }]
             },
             options: {
-                responsive: true,
+                responsive: false,
                 plugins: {
                     title: {
                         display: true,

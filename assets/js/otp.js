@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const phoneInput = document.getElementById("phone");
       const phone = phoneInput.value.trim();
       currentPhone = phone; // Store phone for resend and verify
-      console.log('[DEBUG] Set currentPhone:', currentPhone);
+      
       otpBtn.disabled=true;
       const pattern = /^[6-9]\d{9}$/;
       if (!pattern.test(phone)) {
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let requestBody = `phone=${encodeURIComponent(currentPhone)}`;
         if (allowImmediateResend) {
           requestBody += '&failed_verification=true';
-          console.log('Bypassing cooldown due to failed verification'); // Debug log
+          
         }
 
         const response = await fetch("../otp/resend-otp.php", {
@@ -125,6 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (data.status === 'success') {
           showToastr("success", "A new OTP has been sent!");
+          // Clear OTP fields when new OTP is sent
+          clearOtpFields();
           startCountdown(); // This will also reset allowImmediateResend to false
           // New OTP Info Toast (delayed)
           if (data.otp) {
@@ -179,47 +181,128 @@ function showToastr(type, message) {
 // =============================
 // OTP INPUT FIELD BEHAVIOR
 // =============================
-const inputs = document.querySelectorAll(".otp-input")
-inputs.forEach((input, index) => {
-  input.addEventListener("input", (e) => {
-    e.target.value = e.target.value.replace(/\D/, "")
-    if (e.target.value && index < inputs.length - 1) {
-      inputs[index + 1].focus()
-    }
-  })
 
+// Function to clear all OTP input fields
+function clearOtpFields() {
+  const otpFields = document.querySelectorAll(".otp-input");
+  otpFields.forEach(field => {
+    field.value = "";
+  });
+  // Focus on first field after clearing
+  if (otpFields.length > 0) {
+    otpFields[0].focus();
+  }
+}
+
+// Function to clear all OTP fields (for long press backspace)
+function clearAllOtpFields() {
+  const otpFields = document.querySelectorAll(".otp-input");
+  otpFields.forEach(field => {
+    field.value = "";
+  });
+  // Focus on first field
+  if (otpFields.length > 0) {
+    otpFields[0].focus();
+  }
+}
+
+const inputs = document.querySelectorAll(".otp-input");
+
+inputs.forEach((input, index) => {
+  let backspaceTimeout;
+  let backspaceCount = 0;
+  const longPressDelay = 500; // 500ms for long press detection
+
+  // Handle input (typing digits)
+  input.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/, ""); // Only allow digits
+    
+    if (e.target.value && index < inputs.length - 1) {
+      inputs[index + 1].focus();
+    }
+  });
+
+  // Handle keydown events
   input.addEventListener("keydown", (e) => {
     if (e.key === "Backspace") {
+      e.preventDefault();
+      
       if (input.value === "") {
+        // If current field is empty, go to previous field
         if (index > 0) {
-          inputs[index - 1].focus()
-          inputs[index - 1].value = ""
-          e.preventDefault()
+          inputs[index - 1].focus();
+          inputs[index - 1].value = "";
         }
       } else {
-        input.value = ""
+        // If current field has value, clear it
+        input.value = "";
       }
     }
-  })
+  });
 
+  // Handle keyup events for long press detection
+  input.addEventListener("keyup", (e) => {
+    if (e.key === "Backspace") {
+      backspaceCount++;
+      
+      // Clear previous timeout
+      if (backspaceTimeout) {
+        clearTimeout(backspaceTimeout);
+      }
+      
+      // Set timeout to detect long press
+      backspaceTimeout = setTimeout(() => {
+        if (backspaceCount >= 3) { // If backspace pressed 3+ times quickly
+          clearAllOtpFields();
+        }
+        backspaceCount = 0;
+      }, longPressDelay);
+    }
+  });
+
+  // Handle focus events
+  input.addEventListener("focus", (e) => {
+    // Select all text when focused (for easy replacement)
+    e.target.select();
+  });
+
+  // Handle click events
+  input.addEventListener("click", (e) => {
+    // Select all text when clicked
+    e.target.select();
+  });
+
+  // Handle paste events
   input.addEventListener("paste", (e) => {
-    e.preventDefault()
-    const pasteData = (e.clipboardData || window.clipboardData).getData("text").trim().slice(0, inputs.length)
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData("text").trim().slice(0, inputs.length);
 
     pasteData.split("").forEach((char, i) => {
       if (/\d/.test(char)) {
-        inputs[i].value = char
+        inputs[i].value = char;
       }
-    })
+    });
 
     if (pasteData.length === inputs.length) {
-      inputs[inputs.length - 1].focus()
+      inputs[inputs.length - 1].focus();
     } else {
-      inputs[pasteData.length]?.focus()
+      inputs[pasteData.length]?.focus();
     }
-  })
-})
+  });
 
+  // Handle mobile-specific events
+  input.addEventListener("touchstart", (e) => {
+    // Reset backspace count on touch
+    backspaceCount = 0;
+  });
+
+  // Handle context menu (right-click) to prevent default behavior
+  input.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+});
+
+// Handle Enter key for all OTP inputs
 document.querySelectorAll(".otp-input").forEach((input) => {
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
@@ -247,9 +330,9 @@ if (verifyOtpBtn) {
     })
 
     const finalOtp = otp.join("")
-
-    if (finalOtp.length !== otpFields.length) {
-      Swal.fire("Incomplete OTP", "Please enter all digits of the OTP.", "warning")
+    
+    if (finalOtp.length !== 6) {
+      showToastr("error", "Please enter all 6 digits of the OTP.")
       return
     }
 
@@ -258,10 +341,8 @@ if (verifyOtpBtn) {
       const phoneInput = document.getElementById("phone");
       if (phoneInput) {
         currentPhone = phoneInput.value.trim();
-        console.log('[DEBUG] Fallback set currentPhone:', currentPhone);
       }
     }
-    console.log('[DEBUG] Verifying OTP for phone:', currentPhone, 'OTP:', finalOtp);
 
     // Show spinner/disable button
     verifyOtpBtn.disabled = true;
@@ -274,14 +355,13 @@ if (verifyOtpBtn) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `otp=${encodeURIComponent(finalOtp)}&phone=${encodeURIComponent(currentPhone)}`,
+        body: `phone=${encodeURIComponent(currentPhone)}&otp=${encodeURIComponent(finalOtp)}`,
       })
 
-      const result = await response.text()
-      console.log('[DEBUG] OTP verify response:', result);
+      const resultText = await response.text()
       
       try {
-        const data = JSON.parse(result)
+        const data = JSON.parse(resultText)
 
         if (data.status === "success") {
           Swal.fire({
@@ -294,44 +374,67 @@ if (verifyOtpBtn) {
             window.location.href = "../user/user-dashboard.php"
           })
         } else {
-          // ✅ FIXED: Set flag to allow immediate resend after failed verification
-          Swal.fire({
-            icon: "error",
-            title: "Invalid OTP",
-            text: data.message || "OTP didn't match",
-            confirmButtonText: "Try Again",
-          }).then((result) => {
-            if (result.isConfirmed || result.isDismissed) {
-              // Clear OTP inputs
-              document.querySelectorAll(".otp-input").forEach((input) => {
-                input.value = ""
-              })
-              // Focus on first OTP input
-              const firstOtpInput = document.querySelector(".otp-input")
-              if (firstOtpInput) {
-                firstOtpInput.focus()
-              }
-              // Stop countdown and show resend button immediately
-              clearInterval(countdownInterval);
-              expElement.classList.add('d-none');
-              resendBtn.classList.remove('d-none');
-              // ✅ FIXED: Allow immediate resend after failed verification
-              allowImmediateResend = true;
-              console.log('Immediate resend allowed after failed verification'); // Debug log
-            }
-          })
+          showToastr("error", data.message || "OTP verification failed.")
+          // Clear OTP fields on failed verification
+          clearOtpFields();
+          // If verification fails, allow immediate resend
+          allowImmediateResend = true
+          
+          resendBtn.classList.remove("d-none")
+          clearInterval(countdownInterval) // Stop the timer
+          expElement.classList.add('d-none');
         }
       } catch (e) {
-        console.error("JSON parse error:", result)
-        Swal.fire("Server Error", "Unexpected response from server.", "error")
+        console.error("Failed to parse server response:", resultText)
+        Swal.fire("Server Error", "An unexpected error occurred. Please try again.", "error")
       }
     } catch (error) {
-      console.error("Request error:", error)
-      Swal.fire("Failed", "Failed to verify OTP: " + error.message, "error")
+      console.error("Error verifying OTP:", error)
+      Swal.fire("Failed", "Could not verify OTP: " + error.message, "error")
     } finally {
       // Restore button state
       verifyOtpBtn.disabled = false;
       verifyOtpBtn.innerHTML = originalText;
     }
   })
+}
+
+// =============================
+// UNLOCK ACCOUNT
+// =============================
+const unlockBtn = document.getElementById("unlock");
+if (unlockBtn) {
+  unlockBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('phone').value;
+    const ip = unlockBtn.dataset.ip;
+    
+    // Disable button to prevent multiple clicks
+    unlockBtn.disabled = true;
+    unlockBtn.innerHTML = '<em>Unlocking...</em>';
+
+    try {
+        const response = await fetch("../auth/unlock-account.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `phone=${phone}&ip=${ip}`
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            Swal.fire("Unlocked!", "Your account has been unlocked. You can now log in.", "success")
+                .then(() => location.reload());
+        } else {
+            Swal.fire("Error", data.message || "Could not unlock the account.", "error");
+            unlockBtn.disabled = false;
+            unlockBtn.textContent = 'Unlock Account';
+        }
+    } catch (error) {
+        console.error("Unlock error:", error);
+        Swal.fire("Error", "An unexpected error occurred while unlocking the account.", "error");
+        unlockBtn.disabled = false;
+        unlockBtn.textContent = 'Unlock Account';
+    }
+  });
 }

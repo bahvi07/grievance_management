@@ -71,14 +71,31 @@ CREATE TABLE IF NOT EXISTS otp_requests (
 -- User Login Attempts Table
 CREATE TABLE IF NOT EXISTS user_login_attempts (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_name VARCHAR(15) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
     ip_address VARCHAR(45) NOT NULL,
     attempt_count INT NOT NULL DEFAULT 1,
     is_locked TINYINT(1) DEFAULT 0,
     lock_expiry TIMESTAMP NULL,
+    last_attempt TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_user_name (user_name),
+    INDEX idx_phone (phone),
+    INDEX idx_ip_address (ip_address)
+);
+
+-- Admin Login Attempts Table
+CREATE TABLE IF NOT EXISTS login_attempts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id VARCHAR(50) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    attempt_count INT NOT NULL DEFAULT 1,
+    is_locked TINYINT(1) DEFAULT 0,
+    lock_expiry TIMESTAMP NULL,
+    last_attempt TIMESTAMP NULL,
+    user_agent TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_admin_id (admin_id),
     INDEX idx_ip_address (ip_address)
 );
 

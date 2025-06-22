@@ -58,43 +58,80 @@ footer {
   padding-bottom: 85px; /* Adjust this value to be a bit more than your footer's height */
 }
 
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.chart-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    padding: 0 2rem 2rem 2rem;
+}
+
+.chart-container > div:first-child {
+    padding: 24px;
+}
+
+.chart-container > div:not(#recentTable) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chart-container > div {
+    background: #fff;
+    border-radius: 20px;
+}
+
+#resolvedChart {
+    width: 100% !important;
+    max-width: 100%;
+    height: 350px !important;
+    max-height: 400px;
+    display: block;
+}
+
 .status-card {
-            width: 160px;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            transition: transform 0.3s ease;
-            height: 160px;
-            animation: fadeInUp 0.5s ease-in-out;
-            user-select:none;
-            cursor: pointer;
-            margin-right: 24px;
-            margin-bottom: 24px;
-        }
+    padding: 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    transition: transform 0.3s ease;
+    animation: fadeInUp 0.5s ease-in-out;
+    user-select:none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
-        .status-card:hover {
-            transform: scale(1.05);
-        }
+.status-card:hover {
+    transform: scale(1.05);
+}
 
-        .status-card .count {
-            font-size: 1.45rem;
-            font-weight: bold;
-        }
-        body{
-            background: #FDEDE6;
-        }
-        @keyframes fadeInUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
+.status-card .count {
+    font-size: 1.45rem;
+    font-weight: bold;
+}
+body{
+    background: #FDEDE6;
+}
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
 
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 
 .complaint-center {
   margin-top: 100px;
@@ -292,5 +329,34 @@ footer {
 #changePasswordModal small.text-muted {
     font-size: 0.875rem;
     color: #6c757d;
+}
+
+/* Admin Edit Form UI Improvements */
+.admin-edit-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 70vh;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.admin-edit-card {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 2.5rem 2rem 2rem 2rem;
+    margin: 0 auto;
+}
+.admin-edit-card h4 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+@media (max-width: 500px) {
+    .admin-edit-card {
+        padding: 1.2rem 0.5rem;
+        max-width: 98vw;
+    }
 }
 

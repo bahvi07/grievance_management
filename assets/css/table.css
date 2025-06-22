@@ -1,35 +1,40 @@
-/* Modern Complaints Table Theme */
+
 .complaintTable {
   background: #fff;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
   margin-bottom: 0;
    font-family: 'Segoe UI', sans-serif;
   font-size: 0.88rem;
+  
 }
-
 .complaintTable thead {
   background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.05rem;
   border: none;
 }
 
-.complaintTable th, .complaintTable td {
+
+.complaintTable th, 
+.complaintTable td {
   vertical-align: middle;
   border: none;
-  padding: 0.85rem 1rem;
-  font-size: 0.8rem;
+  padding: 0.80rem 1rem;
+  font-size: 0.88rem;
 }
+
 
 .complaintTable tbody tr {
   transition: background 0.18s;
 }
 
-.complaintTable tbody tr:hover {
+
+.complaintTabletbody tr:hover {
   background: #fff6f0;
 }
+
 
 .complaintTable .btn {
   border-radius: 20px;
@@ -83,6 +88,39 @@ border-radius: 10px;
 #dt-search-0:focus{
 background-color: white;
 }
+/* Recent resolved table */
+#recentResolvedTable{
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
+  margin-bottom: 0;
+   font-family: 'Segoe UI', sans-serif;
+  font-size: 0.88rem;
+}
+
+#recentResolvedTable thead {
+  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
+  color: #fff;
+  font-size: 1.05rem;
+  border: none;
+}
+
+#recentResolvedTable th, #recentResolvedTable td {
+  vertical-align: middle;
+  border: none;
+  padding: 0.80rem 1rem;
+  font-size: 0.88rem;
+}
+
+#recentResolvedTable tbody tr {
+  transition: background 0.18s;
+}
+
+#departmentTable tbody tr:hover {
+  background: #fff6f0;
+}
+
   /* Modern Department Table Theme (matches complaints.php) */
 #departmentTable {
   background: #fff;
@@ -119,30 +157,26 @@ background-color: white;
 /* Feedback Table Custom Styles */
 #feedbackTable {
   background: #fff;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
   margin-bottom: 0;
-  font-family: 'Segoe UI', sans-serif;
+   font-family: 'Segoe UI', sans-serif;
   font-size: 0.88rem;
-  width: 100%;
-  table-layout: auto;
 }
 
 #feedbackTable thead {
   background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.05rem;
   border: none;
 }
 
 #feedbackTable th, #feedbackTable td {
   vertical-align: middle;
   border: none;
-  padding: 0.85rem 1rem;
-  font-size: 0.8rem;
-  text-align: left;
-  white-space: normal;
+  padding: 0.80rem 1rem;
+  font-size: 0.88rem;
 }
 
 #feedbackTable tbody tr {

@@ -6,11 +6,8 @@ ini_set('display_errors', 1);
 require_once '../config/session-config.php';
 startSecureSession();
 require_once '../config/config.php';
-include '../includes/admin-header.php';
-$errorMsg = '';
 
-// Debug output
-echo "<!-- Admin login page loaded successfully -->";
+$errorMsg = '';
 
 // Get IP of User
 function getUserIP() {
@@ -137,6 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         }
     }
 }
+
+include '../includes/admin-header.php';
 ?>
 <style>
   .custom-body{

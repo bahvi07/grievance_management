@@ -1,4 +1,9 @@
-
+<?php
+$currentPage = basename($_SERVER['PHP_SELF']);
+$sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='pending'";
+$result = mysqli_query($conn, $sql);
+$pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
+?>
 <style>
   .sidebar {
     height: 100vh;
@@ -65,13 +70,6 @@
   }
 
 </style>
-<?php
-$currentPage = basename($_SERVER['PHP_SELF']);
-require '../config/config.php';
-$sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='pending'";
-$result = mysqli_query($conn, $sql);
-$pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-?>
 <div class="sidebar mb-5" id="sidebar">
   <ul class="nav flex-column pt-4">
     <li class="nav-item">

@@ -5,7 +5,7 @@ $(document).ready(function() {
     
     // Initialize DataTables with error handling
     try {
-        // Initialize all tables
+        // Initialize all tables with default configuration
         $('#pendingTable').DataTable();
         $('#rejectedTable').DataTable();
         $('#forwardedTable').DataTable();
@@ -150,6 +150,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Add active class to clicked tab
                 this.classList.add('active');
+            });
+        }
+    });
+});
+
+// A single, robust handler for the forward button click.
+$(document).on('click', '.ajax-forward-form button[type="submit"]', function(e) {
+    e.preventDefault(); // Stop the form from submitting through normal means
+    e.stopImmediatePropagation(); // Stop any other click handlers on this element from running
+
+    const $button = $(this);
+    const $form = $button.closest('form'); // Get the parent form
+
+    // Check if the form is already submitting to prevent double-sends
+    if ($button.is(':disabled')) {
+        return; 
+    }
+
+    const originalButtonText = $button.html();
+
+    // Show loading state
+    $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
+
+    $.ajax({
+        url: $form.attr('action'),
+        type: 'POST',
+        data: $form.serialize(),
+        dataType: 'json',
+        success: function(response) {
+            // Hide loading state
+            $button.prop('disabled', false).html(originalButtonText);
+            
+            // Close the modal
+            $('#forwardModal').modal('hide');
+
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message,
+                    timer: 2000,
+                    timerProgressBar: true
+                }).then(() => {
+                    // Reload the page to see the updated status
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: response.message || 'An unknown error occurred.'
+                });
+            }
+        },
+        error: function(xhr) {
+            // Hide loading state
+            $button.prop('disabled', false).html(originalButtonText);
+            
+            // Close the modal
+            $('#forwardModal').modal('hide');
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Request Failed',
+                text: 'Could not connect to the server. Please check your connection and try again.'
             });
         }
     });

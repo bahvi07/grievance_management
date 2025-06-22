@@ -138,11 +138,54 @@ label.form-label {
   margin: 0 5px;
   text-align: center;
   transition: all 0.3s ease;
+  background-color: transparent;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .otp-input:focus {
   border-bottom: 2px solid #FF4500;
   box-shadow: none;
+  outline: none;
+  background-color: rgba(255, 69, 0, 0.05);
+}
+
+.otp-input:not(:placeholder-shown) {
+  border-bottom: 2px solid #28a745;
+}
+
+.otp-input:hover {
+  border-bottom: 2px solid #FF4500;
+  background-color: rgba(255, 69, 0, 0.02);
+}
+
+/* Mobile optimization for OTP inputs */
+@media (max-width: 576px) {
+  .otp-input {
+    width: 35px;
+    height: 45px;
+    font-size: 1.1rem;
+    margin: 0 3px;
+  }
+  
+  /* Increase touch target size on mobile */
+  .otp-input {
+    min-height: 44px; /* iOS recommended minimum */
+  }
+}
+
+/* Disable number input spinners */
+.otp-input::-webkit-outer-spin-button,
+.otp-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.otp-input[type=number] {
+  -moz-appearance: textfield;
 }
 
 #verifyOtpBtn {

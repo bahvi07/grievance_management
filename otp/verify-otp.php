@@ -16,6 +16,21 @@ if (empty($phone) || !preg_match('/^[6-9]\d{9}$/', $phone)) {
     exit;
 }
 
+// Check for lockout BEFORE attempting to verify OTP
+$ip_address = $_SERVER['REMOTE_ADDR'];
+$stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? ORDER BY id DESC LIMIT 1");
+$stmt->bind_param("s", $phone);
+$stmt->execute();
+$attempt = $stmt->get_result()->fetch_assoc();
+
+if ($attempt && $attempt['is_locked'] && strtotime($attempt['lock_expiry']) > time()) {
+    $remaining_time = strtotime($attempt['lock_expiry']) - time();
+    $minutes = floor($remaining_time / 60);
+    $seconds = $remaining_time % 60;
+    echo json_encode(['status' => 'error', 'message' => "Account is locked. Please try again in {$minutes}m {$seconds}s."]);
+    exit;
+}
+
 // Find the latest unused, unexpired OTP for this phone
 $stmt = $conn->prepare("
     SELECT * FROM otp_requests
@@ -53,9 +68,9 @@ if ($result->num_rows === 1) {
         $loginUpdate->bind_param("s", $phone);
         $loginUpdate->execute();
 
-        // Reset login attempts on successful login and update user_name
-        $resetAttempts = $conn->prepare("UPDATE user_login_attempts SET attempt_count = 0, is_locked = 0, lock_expiry = NULL, user_name = ? WHERE phone = ?");
-        $resetAttempts->bind_param("ss", $user_name, $phone);
+        // Reset login attempts on successful login
+        $resetAttempts = $conn->prepare("UPDATE user_login_attempts SET attempt_count = 0, is_locked = 0, lock_expiry = NULL WHERE phone = ?");
+        $resetAttempts->bind_param("s", $phone);
         $resetAttempts->execute();
 
         // Set session and cookie
@@ -68,44 +83,54 @@ if ($result->num_rows === 1) {
         echo json_encode(['status' => 'success']);
     } else {
         // Increment failed login attempts
-        $ip_address = $_SERVER['REMOTE_ADDR'];
-        $stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? ORDER BY id DESC LIMIT 1");
-        $stmt->bind_param("s", $phone);
-        $stmt->execute();
-        $attempt = $stmt->get_result()->fetch_assoc();
-        
         if ($attempt) {
             $new_count = $attempt['attempt_count'] + 1;
-            $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
-            $update->bind_param("ii", $new_count, $attempt['id']);
-            $update->execute();
+            
+            // Check if we should lock the account AFTER this failed attempt
+            if ($new_count >= 5) { // MAX_ATTEMPTS
+                $lock_expiry = date('Y-m-d H:i:s', strtotime('+10 minutes')); // LOCK_DURATION_MINUTES
+                $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, is_locked = 1, lock_expiry = ?, last_attempt = NOW() WHERE id = ?");
+                $update->bind_param("isi", $new_count, $lock_expiry, $attempt['id']);
+                $update->execute();
+                echo json_encode(['status' => 'error', 'message' => 'Too many failed attempts. Account locked for 10 minutes.']);
+            } else {
+                $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
+                $update->bind_param("ii", $new_count, $attempt['id']);
+                $update->execute();
+                echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
+            }
         } else {
-            $insert = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, last_attempt) VALUES (?, ?, 1, NOW())");
+            // First failed attempt
+            $insert = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, is_locked, last_attempt) VALUES (?, ?, 1, 0, NOW())");
             $insert->bind_param("ss", $phone, $ip_address);
             $insert->execute();
+            echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
         }
-        
-        echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
     }
 } else {
     // Increment failed login attempts for invalid OTP
-    $ip_address = $_SERVER['REMOTE_ADDR'];
-    $stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? ORDER BY id DESC LIMIT 1");
-    $stmt->bind_param("s", $phone);
-    $stmt->execute();
-    $attempt = $stmt->get_result()->fetch_assoc();
-    
     if ($attempt) {
         $new_count = $attempt['attempt_count'] + 1;
-        $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
-        $update->bind_param("ii", $new_count, $attempt['id']);
-        $update->execute();
+        
+        // Check if we should lock the account AFTER this failed attempt
+        if ($new_count >= 5) { // MAX_ATTEMPTS
+            $lock_expiry = date('Y-m-d H:i:s', strtotime('+10 minutes')); // LOCK_DURATION_MINUTES
+            $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, is_locked = 1, lock_expiry = ?, last_attempt = NOW() WHERE id = ?");
+            $update->bind_param("isi", $new_count, $lock_expiry, $attempt['id']);
+            $update->execute();
+            echo json_encode(['status' => 'error', 'message' => 'Too many failed attempts. Account locked for 10 minutes.']);
+        } else {
+            $update = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
+            $update->bind_param("ii", $new_count, $attempt['id']);
+            $update->execute();
+            echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
+        }
     } else {
-        $insert = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, last_attempt) VALUES (?, ?, 1, NOW())");
+        // First failed attempt
+        $insert = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, is_locked, last_attempt) VALUES (?, ?, 1, 0, NOW())");
         $insert->bind_param("ss", $phone, $ip_address);
         $insert->execute();
+        echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
     }
-    
-    echo json_encode(['status' => 'error', 'message' => 'OTP is incorrect or expired']);
 }
 ?>

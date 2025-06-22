@@ -52,27 +52,8 @@ $stmt = $conn->prepare("INSERT INTO otp_requests (phone, otp, is_used) VALUES (?
 $stmt->bind_param("ssi", $phone, $otp_hash, $is_used);
 
 if ($stmt->execute()) {
-    // Now handle login attempts tracking after OTP is successfully stored
-    if ($attempt) {
-        $new_count = $attempt['attempt_count'] + 1;
-        if ($new_count >= MAX_ATTEMPTS) {
-            $lock_expiry = date('Y-m-d H:i:s', strtotime("+".LOCK_DURATION_MINUTES." minutes"));
-            $lock = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, is_locked = 1, lock_expiry = ?, last_attempt = NOW() WHERE id = ?");
-            $lock->bind_param("isi", $new_count, $lock_expiry, $attempt['id']);
-            $lock->execute();
-            echo json_encode(['status' => 'error', 'message' => "Too many attempts. Account locked for ".LOCK_DURATION_MINUTES." minutes."]);
-            exit;
-        } else {
-            $inc = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ?, last_attempt = NOW() WHERE id = ?");
-            $inc->bind_param("ii", $new_count, $attempt['id']);
-            $inc->execute();
-        }
-    } else {
-        // First attempt
-        $ins = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, is_locked, last_attempt) VALUES (?, ?, 1, 0, NOW())");
-        $ins->bind_param("ss", $phone, $ip_address);
-        $ins->execute();
-    }
+    // Don't increment attempt count here - only count attempts when verifying OTP
+    // This prevents double counting (send OTP = 1 attempt, verify OTP = 2 attempts)
     
     echo json_encode(['status' => 'success', 'otp' => $otp]); // For development only, remove `otp` in production
 } else {

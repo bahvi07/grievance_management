@@ -40,7 +40,7 @@ if (isset($_COOKIE['user_token'])) {
 <div class="container d-flex justify-content-center align-items-center vh-100">
   <div class="card login-card text-center">
 
-    <img src="../assets/images/general_images/Bjplogo.jpg" class="img-fluid rounded-circle mx-auto login-logo" alt="Logo">
+    <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" class="img-fluid rounded-circle mx-auto login-logo" alt="Logo">
 
     <p class="" style="font-weight: 700;
   color: #FF4500; font-size:1.5rem;">
@@ -119,8 +119,8 @@ if (isset($_COOKIE['user_token'])) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <!-- DataTables JS - Official -->
-<script src="../assets/datatables/datatables.min.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/datatables/datatables.min.js"></script>
 <!--Custom Js-->
-<script src="../assets/js/otp.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/otp.js"></script>
 </body>
 </html>

@@ -14,14 +14,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <!-- DataTables -->
-<script src="https://cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/datatables/datatables.min.js"></script>
 
 <!-- Custom JS -->
-<script src="../assets/js/otp.js"></script>
-<script src="../assets/js/user-dashboard.js"></script>
-<script src="../assets/js/mycomp.js"></script>
-<script src="../assets/js/feedback.js"></script>
-<script src="../assets/js/viewStatus.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/otp.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/user-dashboard.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/mycomp.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/feedback.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/viewStatus.js"></script>
 
 <!-- Toastr Configuration -->
 <script>

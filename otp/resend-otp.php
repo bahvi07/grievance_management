@@ -42,34 +42,8 @@ if ($attempt && $attempt['is_locked'] && strtotime($attempt['lock_expiry']) > ti
     exit;
 }
 
-// --- Increment attempt count for resend ---
-$remaining_attempts = MAX_ATTEMPTS;
-if ($attempt) {
-    $new_count = $attempt['attempt_count'] + 1;
-    $remaining_attempts = MAX_ATTEMPTS - $new_count;
-    if ($new_count >= MAX_ATTEMPTS) {
-        $lock_expiry = date('Y-m-d H:i:s', strtotime("+".LOCK_DURATION_MINUTES." minutes"));
-        $lock = $conn->prepare("UPDATE user_login_attempts SET attempt_count = 0, is_locked = 1, lock_expiry = ? WHERE id = ?");
-        $lock->bind_param("si", $lock_expiry, $attempt['id']);
-        $lock->execute();
-        echo json_encode([
-            'status' => 'error', 
-            'message' => "Too many resend attempts. Account locked for ".LOCK_DURATION_MINUTES." minutes.",
-            'remaining_attempts' => 0
-        ]);
-        exit;
-    } else {
-        $inc = $conn->prepare("UPDATE user_login_attempts SET attempt_count = ? WHERE id = ?");
-        $inc->bind_param("ii", $new_count, $attempt['id']);
-        $inc->execute();
-    }
-} else {
-    // First attempt
-    $ins = $conn->prepare("INSERT INTO user_login_attempts (phone, ip_address, attempt_count, is_locked) VALUES (?, ?, 1, 0)");
-    $ins->bind_param("ss", $phone, $ip_address);
-    $ins->execute();
-    $remaining_attempts = MAX_ATTEMPTS - 1;
-}
+// Don't increment attempt count for resend - only count verification attempts
+// This prevents double counting and allows users to resend OTP without penalty
 
 // --- Resend Cooldown Check (✅ MODIFIED: Skip if failed verification) ---
 if (!$bypass_cooldown) {
@@ -110,10 +84,10 @@ if ($stmt->execute()) {
         'status' => 'success',
         'message' => 'A new OTP has been sent.',
         'otp' => $otp, // For development only. REMOVE in production.
-        'remaining_attempts' => $remaining_attempts
+        'remaining_attempts' => 0
     ]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Failed to generate a new OTP. Please try again.', 'remaining_attempts' => $remaining_attempts]);
+    echo json_encode(['status' => 'error', 'message' => 'Failed to generate a new OTP. Please try again.', 'remaining_attempts' => 0]);
 }
 
 $stmt->close();

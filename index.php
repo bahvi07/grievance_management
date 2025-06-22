@@ -1,4 +1,5 @@
-<?php include '../complain/includes/header.php'; ?>
+<?php require_once 'config/config.php'; ?>
+<?php include 'includes/header.php'; ?>
 <style>
   body.custom-body {
   margin: 0;
@@ -48,7 +49,7 @@ img {
 </head>
 <body class="custom-body">
 
-  <img src="assets/images/general_images/Bjplogo.jpg" alt="Logo">
+  <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" alt="Logo">
   <p class="tagline">Welcome to Vidhayak Seva Kendra</p>
 
   <script>

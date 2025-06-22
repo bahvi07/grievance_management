@@ -38,7 +38,7 @@ if ($result->num_rows > 0) {
     echo "<div class='card p-2 mb-2'>
             <strong>{$row['name']}</strong> ({$row['email']})<br>
             <small><b>Area:</b> {$row['area']}</small><br>
-          <form method='POST' action='../mail_api/forward-mail.php' class='d-inline forwardForm'>"
+          <form method='POST' action='../mail_api/forward-mail.php' class='d-inline ajax-forward-form'>"
             . csrf_field() .
             "<input type='hidden' name='refid' value='" . htmlspecialchars($refid) . "'>
             <input type='hidden' name='dept_email' value='" . htmlspecialchars($row['email']) . "'>
@@ -56,24 +56,3 @@ if ($result->num_rows > 0) {
   echo "<div class='text-muted'>No matching department found.</div>";
 }
 ?>
-
-<script>
-$(document).ready(function() {
-  $('.forwardForm').on('submit', function(e) {
-    var $form = $(this);
-    var $btn = $form.find('button[type="submit"]');
-    $btn.prop('disabled', true);
-    var originalText = $btn.html();
-    $btn.html('<span class="spinner-border spinner-border-sm"></span> Forwarding...');
-
-    // Let the form submit normally (page reloads or modal closes on success)
-    // If you want to handle via AJAX, preventDefault and handle response here
-
-    // If you want to re-enable/reset the button after a delay (for demo):
-    // setTimeout(function() {
-    //   $btn.prop('disabled', false);
-    //   $btn.html(originalText);
-    // }, 3000);
-  });
-});
-</script>

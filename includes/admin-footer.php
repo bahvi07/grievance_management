@@ -5,14 +5,14 @@
   </div>
 </footer>
 
-<!-- Bootstrap Bundle JS -->
+<!-- jQuery FIRST -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Then Bootstrap Bundle JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <!-- SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -21,16 +21,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <!-- DataTables -->
-<script src="https://cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/datatables/datatables.min.js"></script>
 <!--Excel/CSV-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <!--Custom Js-->
-<script src="../assets/js/admin-script.js"></script>
-<script src="../assets/js/show-department.js"></script>
-<script src="../assets/js/status-resolve.js"></script>
-<script src="../assets/js/excel.js"></script>
-<script src="../assets/js/update-password.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/admin-script.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/show-department.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/status-resolve.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/excel.js"></script>
+<script src="<?php echo BASE_URL; ?>assets/js/update-password.js"></script>
 </body>
 
 </html>

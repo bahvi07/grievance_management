@@ -1,15 +1,14 @@
 <?php
+include '../includes/admin-init.php';
 include '../includes/admin-header.php';
-include '../config/config.php';
 include '../includes/admin-nav.php';
-include '../auth/admin-auth-check.php';
 ?>
 </head>
 
 <body>
     <div class="top-head bg-light">
         <div class="brand">
-            <img src="../assets/images/general_images/Bjplogo.jpg" alt="Logo">
+            <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" alt="Logo">
             Department Details Panel
         </div>
         <div class="">
@@ -19,13 +18,6 @@ include '../auth/admin-auth-check.php';
     <div class="complaint-center row ">
         <!-- Nav Tabs -->
        <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold text-orange">Show Department</h3>
-            <p class="text-muted">View and search all department lists from here</p>
-        </div>
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#departmentModal">
-            <i class="fas fa-building"></i> Add Department
-        </button>
     </div>
 
     <!-- Display session messages -->
@@ -57,18 +49,25 @@ include '../auth/admin-auth-check.php';
             <input type="text" class="form-control" id="area" placeholder="Enter Area (e.g., durga market)">
         </div>
 
-        <!-- Download Button -->
-        <div class="col-md-3">
-            <label class="form-label d-block">Download</label>
-            <a href="../admin/reports/excel.php?type=departments&filter=all" class="btn btn-success w-50">
-                <i class="fa fa-download"></i>
-            </a>
+        <!-- Buttons Container -->
+        <div class="col-md-6 d-flex align-items-end">
+            <div>
+                <a href="../admin/reports/excel.php?type=departments&filter=all" class="btn btn-success">
+                    <i class="fa fa-download"></i>
+                </a>
+            </div>
+            <div class="ms-2">
+                <label class="form-label d-block invisible">Add</label> <!-- Spacer label -->
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#departmentModal">
+                    <i class="fas fa-building"></i> Add Department
+                </button>
+            </div>
         </div>
     </div>
         <!-- Complaints Table -->
         <div class="table-responsive bg-light rounded shadow-sm p-3">
-        <table id="departmentTable" class="table table-bordered table-hover">
-            <thead class="table-light">
+        <table id="departmentTable" class="table table-hover table-borderless">
+            <thead class="table-dark">
                 <tr>
                     <th>#</th>
                     <th>Category</th>
