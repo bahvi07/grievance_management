@@ -4,9 +4,9 @@ require_once '../config/session-config.php';
 startSecureSession();
 // error_reporting(E_ALL);
 // ini_set('display_errors', 1);
-require_once '../phpmailer/src/Exception.php';
-require_once '../phpmailer/src/PHPMailer.php';
-require_once '../phpmailer/src/SMTP.php';
+require_once '../vendor/phpmailer/phpmailer/src/Exception.php';
+require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require_once '../vendor/phpmailer/phpmailer/src/SMTP.php';
 require __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -62,10 +62,33 @@ try {
     $sender_name = $_ENV['MAIL_FROM_NAME'];
 
     $subject = "Password Reset Verification Code";
+    $logoPath = '../assets/images/general_images/Bjplogo.jpg';
+    if (file_exists($logoPath)) {
+        $mail = new PHPMailer(true);
+        $mail->addEmbeddedImage($logoPath, 'logo_cid');
+        $logoSrc = 'cid:logo_cid';
+    } else {
+        $logoSrc = '../assets/images/general_images/Bjplogo.jpg'; // fallback
+    }
+
+    $mail->isSMTP();
+    $mail->Host = $host;
+    $mail->SMTPAuth = true;
+    $mail->Username = $username;
+    $mail->Password = $pswd;
+    $mail->SMTPSecure = $enc;
+    $mail->Port = $port;
+
+    $mail->setFrom($sender, $sender_name);
+    $mail->addAddress($email);
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    
+    // Use embedded logo in the email body
     $message = '
         <div style="font-family: Arial, sans-serif; background: #fff6f2; padding: 24px; border-radius: 12px; max-width: 480px; margin: auto; border: 1px solid #ffd6c1;">
           <div style="text-align: center; margin-bottom: 16px;">
-            <img src="../assets/images/general_images/Bjplogo.jpg" alt="Logo" style="height: 48px;">
+            <img src="' . $logoSrc . '" alt="Logo" style="height: 48px;">
             <h2 style="color: #FF4500; margin: 12px 0 0 0;">Vidhayak Sewa Kendra</h2>
           </div>
           <h3 style="color: #f15a29; text-align: center;">Password Reset Verification Code</h3>
@@ -84,20 +107,6 @@ try {
           </div>
         </div>
         ';
-    
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = $host;
-    $mail->SMTPAuth = true;
-    $mail->Username = $username;
-    $mail->Password = $pswd;
-    $mail->SMTPSecure = $enc;
-    $mail->Port = $port;
-
-    $mail->setFrom($sender, $sender_name);
-    $mail->addAddress($email);
-    $mail->isHTML(true);
-    $mail->Subject = $subject;
     $mail->Body = $message;
 
     $mail->send();
