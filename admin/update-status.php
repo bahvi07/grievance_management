@@ -18,22 +18,52 @@ try {
     $refid = $_POST['r'] ?? '';
     $note = $_POST['n'] ?? '';
 
+    // Debug logging
+    error_log("Attempting to update complaint with refid: " . $refid);
+
     if (empty($refid)) {
         throw new Exception('Reference ID is required');
     }
 
-    $stmt = $conn->prepare("UPDATE complaints SET status='resolve', response=? WHERE refid=?");
+    // First check if complaint exists
+    $check_stmt = $conn->prepare("SELECT refid, status FROM complaints WHERE refid = ?");
+    $check_stmt->bind_param("s", $refid);
+    $check_stmt->execute();
+    $result = $check_stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        error_log("No complaint found with refid: " . $refid);
+        throw new Exception('Complaint not found');
+    }
+    
+    // Debug: Log current status
+    $current = $result->fetch_assoc();
+    error_log("Current complaint status: " . $current['status']);
+    
+    $check_stmt->close();
+
+    // Now update the complaint
+    $stmt = $conn->prepare("UPDATE complaints SET status = 'resolve', response = ?, updated_at = CURRENT_TIMESTAMP WHERE refid = ?");
     $stmt->bind_param("ss", $note, $refid);
     
     if ($stmt->execute()) {
-        $response = [
-            'success' => true,
-            'message' => 'Complaint marked as resolved successfully'
-        ];
+        if ($stmt->affected_rows > 0) {
+            error_log("Successfully updated complaint status for refid: " . $refid);
+            $response = [
+                'success' => true,
+                'message' => 'Complaint marked as resolved successfully'
+            ];
+        } else {
+            error_log("No rows affected when updating refid: " . $refid);
+            throw new Exception('No changes were made to the complaint');
+        }
     } else {
-        throw new Exception('Failed to update complaint status');
+        error_log("Failed to update complaint. SQL Error: " . $stmt->error);
+        throw new Exception('Failed to update complaint status: ' . $stmt->error);
     }
+    $stmt->close();
 } catch (Exception $e) {
+    error_log('Error in update-status.php: ' . $e->getMessage());
     $response['message'] = $e->getMessage();
 }
 

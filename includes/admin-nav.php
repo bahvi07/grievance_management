@@ -1,8 +1,14 @@
 <?php
 $currentPage = basename($_SERVER['PHP_SELF']);
-$sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='pending'";
-$result = mysqli_query($conn, $sql);
-$pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
+
+$status = 'pending';
+$stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints WHERE status = ?");
+$stmt->bind_param("s", $status);
+$stmt->execute();
+$result = $stmt->get_result();
+$pendingCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+$stmt->close();
+
 ?>
 <style>
   .sidebar {

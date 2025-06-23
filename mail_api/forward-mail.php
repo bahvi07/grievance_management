@@ -134,8 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function updateStatus($ref, $conn) {
     if ($conn) {
-        $stmt = $conn->prepare("UPDATE complaints SET status = 'forward' WHERE refid = ?");
-        $stmt->bind_param("s", $ref);
+        $stmt = $conn->prepare("UPDATE complaints SET status = 'forward', response = ? WHERE refid = ?");
+        $response = "Your complaint is forwarded to department to take action quickly";
+        $stmt->bind_param("ss", $response, $ref);
         $stmt->execute();
         $stmt->close();
     }

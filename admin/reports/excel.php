@@ -13,16 +13,21 @@ if ($type === 'departments') {
 
     // Write headers
     fputcsv($output, ['ID', 'Department Name', 'Category', 'Email', 'Phone', 'Area', 'Created At', 'Updated At']);
-
-    $sql = "SELECT * FROM departments";
-    if (is_numeric($filter)) {
-        $sql .= " WHERE id = " . intval($filter);
-    }
-
-    $result = mysqli_query($conn, $sql);
     $id = 1;
 
-    while ($row = mysqli_fetch_assoc($result)) {
+    // Check if $filter is numeric and use prepared statement accordingly
+    if (is_numeric($filter)) {
+        $stmt = $conn->prepare("SELECT * FROM departments WHERE id = ?");
+        $stmt->bind_param('i', $filter); // 'i' is used for integer
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM departments");
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // Export to CSV (or use your output stream)
+    while ($row = $result->fetch_assoc()) {
         fputcsv($output, [
             $id++,
             $row['name'] ?? 'N/A',
@@ -34,7 +39,9 @@ if ($type === 'departments') {
             $row['updated_at'] ?? '',
         ]);
     }
-
+    
+    $stmt->close();
+    
 } elseif ($type === 'complaints') {
     header('Content-Disposition: attachment; filename="complaints_' . $filter . '_' . date('Y-m-d_H-i-s') . '.csv"');
 
@@ -44,32 +51,39 @@ if ($type === 'departments') {
         'Status', 'Response', 'Created At', 'Updated At'
     ]);
 
-    $sql = "SELECT * FROM complaints";
-    if ($filter !== 'all') {
-        $filterSafe = $conn->real_escape_string($filter);
-        $sql .= " WHERE status = '$filterSafe'";
-    }
-
-    $result = mysqli_query($conn, $sql);
     $id = 1;
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        fputcsv($output, [
-            $id++,
-            $row['refid'] ?? 'N/A',
-            $row['name'] ?? 'N/A',
-            $row['father'] ?? 'N/A',
-            $row['email'] ?? 'N/A',
-            $row['phone'] ?? 'N/A',
-            $row['location'] ?? 'N/A',
-            $row['category'] ?? 'N/A',
-            $row['complaint'] ?? 'N/A',
-            $row['status'] ?? 'N/A',
-            $row['response'] ?? 'N/A',
-            $row['created_at'] ?? '',
-            $row['updated_at'] ?? ''
-        ]);
-    }
+// Check if a specific filter is provided
+if ($filter !== 'all') {
+    $stmt = $conn->prepare("SELECT * FROM complaints WHERE status = ?");
+    $stmt->bind_param('s', $filter);
+} else {
+    $stmt = $conn->prepare("SELECT * FROM complaints");
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    fputcsv($output, [
+        $id++,
+        $row['refid'] ?? 'N/A',
+        $row['name'] ?? 'N/A',
+        $row['father'] ?? 'N/A',
+        $row['email'] ?? 'N/A',
+        $row['phone'] ?? 'N/A',
+        $row['location'] ?? 'N/A',
+        $row['category'] ?? 'N/A',
+        $row['complaint'] ?? 'N/A',
+        $row['status'] ?? 'N/A',
+        $row['response'] ?? 'N/A',
+        $row['created_at'] ?? '',
+        $row['updated_at'] ?? ''
+    ]);
+}
+
+$stmt->close();
+
 }
 
 fclose($output);

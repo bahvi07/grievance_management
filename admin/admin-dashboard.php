@@ -24,11 +24,20 @@ include '../includes/admin-nav.php';
                     <h5>New Complaints</h5>
                     <span class="count">
                         <?php
-                        $currentPage = basename($_SERVER['PHP_SELF']);
-                        $sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='pending'";
-                        $result = mysqli_query($conn, $sql);
-                        $pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-                        echo $pendingCount;
+                    $currentPage = basename($_SERVER['PHP_SELF']);
+
+                    $status = 'pending';
+                    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints WHERE status = ?");
+                    $stmt->bind_param("s", $status);
+                    $stmt->execute();
+                    
+                    $result = $stmt->get_result();
+                    $pendingCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+                    
+                    echo $pendingCount;
+                    
+                    $stmt->close();
+                    
                         ?>
                     </span>
                 </div>
@@ -37,13 +46,24 @@ include '../includes/admin-nav.php';
                 <div class="status-card bg-success text-white">
                     <i class="fas fa-check-circle fa-2x mb-2"></i>
                     <h5>Resolved</h5>
-                    <span class="count"> <?php
-                                            $currentPage = basename($_SERVER['PHP_SELF']);
-                                            $sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='resolve'";
-                                            $result = mysqli_query($conn, $sql);
-                                            $resCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-                                            echo $resCount;
-                                            ?></span>
+                    <span class="count">
+                         <?php
+                                           $currentPage = basename($_SERVER['PHP_SELF']);
+
+                                           $status = 'resolve';
+                                           $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints WHERE status = ?");
+                                           $stmt->bind_param("s", $status);
+                                           $stmt->execute();
+                                           
+                                           $result = $stmt->get_result();
+                                           $resCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+                                           
+                                           echo $resCount;
+                                           
+                                           $stmt->close();
+                                           
+                                            ?>
+                                            </span>
                 </div>
 
                 <!-- Rejected Complaints -->
@@ -52,11 +72,20 @@ include '../includes/admin-nav.php';
                     <h5>Rejected</h5>
                     <span class="count">
                         <?php
-                        $currentPage = basename($_SERVER['PHP_SELF']);
-                        $sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='reject'";
-                        $result = mysqli_query($conn, $sql);
-                        $rejectCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-                        echo $rejectCount;
+                     $currentPage = basename($_SERVER['PHP_SELF']);
+
+                     $status = 'reject';
+                     $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints WHERE status = ?");
+                     $stmt->bind_param("s", $status);
+                     $stmt->execute();
+                     
+                     $result = $stmt->get_result();
+                     $rejectCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+                     
+                     echo $rejectCount;
+                     
+                     $stmt->close();
+                     
                         ?>
                     </span>
                 </div>
@@ -67,11 +96,20 @@ include '../includes/admin-nav.php';
                     <h5>Forwarded</h5>
                     <span class="count">
                         <?php
-                        $currentPage = basename($_SERVER['PHP_SELF']);
-                        $sql = "SELECT COUNT(*) AS total FROM complaints WHERE status='forward'";
-                        $result = mysqli_query($conn, $sql);
-                        $forwardCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] : 0;
-                        echo $forwardCount;
+                     $currentPage = basename($_SERVER['PHP_SELF']);
+
+                     $status = 'forward';
+                     $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints WHERE status = ?");
+                     $stmt->bind_param("s", $status);
+                     $stmt->execute();
+                     
+                     $result = $stmt->get_result();
+                     $forwardCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+                     
+                     echo $forwardCount;
+                     
+                     $stmt->close();
+                     
                         ?>
                     </span>
                 </div>

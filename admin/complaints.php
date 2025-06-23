@@ -285,11 +285,14 @@ include '../includes/admin-nav.php';
         </td>
         <td>$createdAt</td>
         <td>
-             <button class='btn btn-success btn-sm text-white' 
-                data-bs-toggle='modal' 
-                data-bs-target='#resolveModal' 
-                >Mark as Resolved
-            </button>
+             <button 
+    class='btn btn-success btn-sm text-white resBt' 
+    data-bs-toggle='modal' 
+    data-bs-target='#resolveModal' 
+    data-resid='{$refId}'
+>
+    Mark as Resolved
+</button>
         </td>
     </tr>";
                         }
@@ -360,7 +363,7 @@ include '../includes/admin-nav.php';
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="r" id="resolve_refid" value="">
+                        <input type="hidden" id="resolve_refid" name="r" value="">
                         <div class="mb-3">
                             <label for="resolve_note" class="form-label">Resolution Note (optional)</label>
                             <textarea class="form-control" name="n" id="resolve_note" rows="3" placeholder="Add a note for the user..."></textarea>
