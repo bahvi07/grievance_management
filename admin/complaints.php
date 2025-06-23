@@ -420,5 +420,6 @@ include '../includes/admin-nav.php';
     <?php
     include '../includes/admin-footer.php';
     ?>
+    <script src="../assets/js/forward-complaint.js"></script>
 </body>
 </html>
