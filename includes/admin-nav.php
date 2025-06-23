@@ -94,7 +94,7 @@ $pendingCount = ($result && $row = mysqli_fetch_assoc($result)) ? $row['total'] 
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="../auth/admin-logout.php">
+      <a class="nav-link" href="../auth/admin-logout.php?manual=true">
         <i class="fas fa-sign-out-alt"></i> Logout
       </a>
     </li>

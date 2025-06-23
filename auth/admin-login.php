@@ -77,6 +77,28 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             $_SESSION['admin_email'] = $admin['email'];
                             $_SESSION['last_activity'] = time();
                             
+                            // Check if "Remember Me" is selected
+                            if (isset($_POST['remember_me']) && $_POST['remember_me'] === 'on') {
+                                $selector = bin2hex(random_bytes(16));
+                                $validator = bin2hex(random_bytes(32));
+                                $validator_hash = hash('sha256', $validator);
+                                $expires_at = date('Y-m-d H:i:s', time() + (86400 * 30)); // 30 days
+                                
+                                // Store the new token in the database
+                                $stmt = $conn->prepare(
+                                    "INSERT INTO admin_auth_tokens (admin_id, selector, validator_hash, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)"
+                                );
+                                $ip_address = getUserIP();
+                                $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+                                $stmt->bind_param("ssssss", $admin['admin_id'], $selector, $validator_hash, $expires_at, $ip_address, $user_agent);
+                                $stmt->execute();
+
+                                // Set the cookie on the user's browser
+                                $cookie_value = $selector . ':' . $validator;
+                                setcookie("admin_token", $cookie_value, time() + (86400 * 30), "/", "", false, true);
+                                error_log("Admin 'Remember Me' token set for admin_id: " . $admin['admin_id'], 3, LOG_FILE);
+                            }
+                            
                             error_log("Admin login successful for ID: " . $admin['admin_id'], 3, LOG_FILE);
                             
                             header("Location: ../admin/admin-dashboard.php");
@@ -215,6 +237,11 @@ include '../includes/admin-header.php';
               <i class="fa fa-eye-slash" id="passwordIcon"></i>
             </span>
           </div>
+        </div>
+
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+          <label class="form-check-label" for="remember_me">Remember Me</label>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mb-3">Sign in</button>
