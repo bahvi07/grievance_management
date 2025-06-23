@@ -7,9 +7,9 @@ header('Content-Type: application/json');
 $response = [];
 
 // Debug information
-error_log("Delete account request received");
-error_log("POST data: " . print_r($_POST, true));
-error_log("Session data: " . print_r($_SESSION, true));
+// error_log("Delete account request received");
+// error_log("POST data: " . print_r($_POST, true));
+// error_log("Session data: " . print_r($_SESSION, true));
 
 // Verify CSRF token
 if (!CSRFProtection::verifyPostToken()) {
@@ -91,13 +91,24 @@ try {
 
     // Destroy the session cookie with proper parameters
     if (isset($_COOKIE[session_name()])) {
-        setcookie(session_name(), '', time() - 3600, '/', '', false, true);
+        setcookie(session_name(), '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
     }
 
     // Destroy the user_token cookie with proper parameters
     if (isset($_COOKIE['user_token'])) {
-        setcookie('user_token', '', time() - 3600, '/', '', false, true);
-        setcookie('user_token', '', time() - 3600, '/', '', true, true); // Also try with secure flag
+        setcookie('user_token', '', [
+            'expires' => time() - 3600,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
     }
 
     // Destroy the session
@@ -110,7 +121,13 @@ try {
             $parts = explode('=', $cookie);
             $name = trim($parts[0]);
             if ($name == 'user_token' || $name == session_name()) {
-                setcookie($name, '', time() - 3600, '/');
+                setcookie($name, '', [
+                    'expires' => time() - 3600,
+                    'path' => '/',
+                    'secure' => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict',
+                ]);
             }
         }
     }

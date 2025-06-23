@@ -16,7 +16,13 @@ session_unset();
 session_destroy();
 
 // Remove cookie
-setcookie("user_token", "", time() - 3600, "/");
+setcookie("user_token", "", [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
 
 header("Location: login.php");
 

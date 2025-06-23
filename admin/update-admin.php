@@ -26,6 +26,22 @@ try {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
 
+    // Validate name (letters and spaces, 2-50 chars)
+    $name = trim($name);
+    if (strlen($name) < 2 || strlen($name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $name)) {
+        throw new Exception('Name must be 2-50 letters and spaces only.');
+    }
+    // Validate email
+    $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Invalid email format');
+    }
+    // Validate phone (10 digits)
+    $phone = preg_replace('/[^0-9]/', '', $phone);
+    if (strlen($phone) !== 10) {
+        throw new Exception('Invalid phone number. It must be 10 digits.');
+    }
+
     if (empty($id)) {
         throw new Exception('Admin Id is Required');
     }

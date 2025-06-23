@@ -1,8 +1,15 @@
 <?php
 include '../../config/config.php';
 
+$allowedTypes = ['complaints', 'resolved', 'pending', 'rejected', 'forwarded'];
 $type = $_GET['type'] ?? $_POST['type'] ?? 'complaints';
 $filter = $_GET['filter'] ?? $_POST['complaint_status'] ?? 'all';
+if (!in_array($type, $allowedTypes)) {
+    die('Invalid type parameter.');
+}
+if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $filter)) {
+    die('Invalid filter parameter.');
+}
 
 header('Content-Type: text/csv');
 

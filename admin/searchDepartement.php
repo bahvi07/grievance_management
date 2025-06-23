@@ -13,6 +13,17 @@ if (!CSRFProtection::verifyPostToken()) {
 
 $area = $_POST['area'] ?? '';
 $category = $_POST['category'] ?? '';
+// Validate area and category
+$area = trim($area);
+$category = trim($category);
+if (strlen($area) < 2 || strlen($area) > 100) {
+    echo json_encode(['success' => false, 'message' => 'Area must be 2-100 characters.']);
+    exit;
+}
+if (strlen($category) < 2 || strlen($category) > 50) {
+    echo json_encode(['success' => false, 'message' => 'Category must be 2-50 characters.']);
+    exit;
+}
 $refid = $_POST['refid'] ?? '';
 
 // Get the complaint details first to ensure we have the correct image

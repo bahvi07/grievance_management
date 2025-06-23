@@ -84,11 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
             Swal.fire("Error", data.message || "An unknown error occurred.", "error");
           }
         } catch (e) {
-          console.error("Non-JSON response:", result);
           Swal.fire("Server Error", "Unexpected server response.", "error");
         }
       } catch (error) {
-        console.error("Error sending OTP:", error);
         Swal.fire("Failed", "Failed to send OTP: " + error.message, "error");
       }
     });
@@ -138,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
           Swal.fire("Error", data.message || "Could not resend OTP.", "error");
         }
       } catch (error) {
-        console.error("Resend OTP error:", error);
         Swal.fire("Failed", "An error occurred while trying to resend the OTP.", "error");
       } finally {
         resendBtn.disabled = false;
@@ -385,11 +382,9 @@ if (verifyOtpBtn) {
           expElement.classList.add('d-none');
         }
       } catch (e) {
-        console.error("Failed to parse server response:", resultText)
         Swal.fire("Server Error", "An unexpected error occurred. Please try again.", "error")
       }
     } catch (error) {
-      console.error("Error verifying OTP:", error)
       Swal.fire("Failed", "Could not verify OTP: " + error.message, "error")
     } finally {
       // Restore button state
@@ -431,7 +426,6 @@ if (unlockBtn) {
             unlockBtn.textContent = 'Unlock Account';
         }
     } catch (error) {
-        console.error("Unlock error:", error);
         Swal.fire("Error", "An unexpected error occurred while unlocking the account.", "error");
         unlockBtn.disabled = false;
         unlockBtn.textContent = 'Unlock Account';

@@ -43,26 +43,39 @@ try {
             throw new Exception("Could not create upload directory");
         }
 
+        // Strict extension check
+        $ext = strtolower(pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION));
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array($ext, $allowed_ext)) {
+            $errorMsg['img'] = "Invalid file extension. Only JPG, JPEG, PNG, and GIF allowed.";
+        }
+
         $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($fileInfo, $_FILES['img']['tmp_name']);
         finfo_close($fileInfo);
-
-        $allowed = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($mime, $allowed)) {
-            $errorMsg['img'] = "Only JPG, PNG, and GIF images are allowed.";
+        $allowed_mimes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif'
+        ];
+        if (!isset($allowed_mimes[$ext]) || $mime !== $allowed_mimes[$ext]) {
+            $errorMsg['img'] = "File extension and MIME type do not match or are not allowed.";
         } elseif ($_FILES['img']['size'] > 2 * 1024 * 1024) {
             $errorMsg['img'] = "Image must be less than 2MB.";
         } else {
-            $ext = pathinfo($_FILES['img']['name'], PATHINFO_EXTENSION);
             $newFileName = uniqid('img_', true) . '.' . $ext;
             $dest = $uploadDir . $newFileName;
 
             if (move_uploaded_file($_FILES['img']['tmp_name'], $dest)) {
+                chmod($dest, 0644); // Set file permissions
                 $imagePath = '../assets/images/complain_upload/' . $newFileName;
             } else {
                 $errorMsg['img'] = "Failed to upload the image.";
             }
         }
+        // Security: Place an .htaccess file in the upload directory to prevent script execution
+        // Contents: "php_flag engine off\nRemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps"
     }
 
     if (!empty($errorMsg)) {

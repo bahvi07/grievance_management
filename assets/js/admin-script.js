@@ -1,17 +1,11 @@
 $(document).ready(function() {
-    // Debug: Check if jQuery and DataTables are loaded
-    console.log('jQuery version:', $.fn.jquery);
-    console.log('DataTables plugin available:', typeof $.fn.DataTable !== 'undefined');
-    
     // Initialize DataTables with error handling
     try {
         // Initialize all tables with default configuration
         $('#pendingTable').DataTable();
         $('#rejectedTable').DataTable();
         $('#forwardedTable').DataTable();
-        console.log('DataTables initialized successfully');
     } catch (error) {
-        console.error('Error initializing DataTables:', error);
     }
 });
 

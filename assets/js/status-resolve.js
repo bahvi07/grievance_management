@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
           result = JSON.parse(rawText);
         } catch (parseError) {
-          console.error('Server response:', rawText);
           throw new Error("Invalid JSON response from server");
         }
 
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
       } catch (error) {
-        console.error('Error:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',

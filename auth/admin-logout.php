@@ -19,7 +19,13 @@ if ($manualLogout) {
     }
     
     // Clear the remember me cookie
-    setcookie("admin_token", "", time() - 3600, "/");
+    setcookie("admin_token", "", [
+        'expires' => time() - 3600,
+        'path' => '/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
 }
 
 session_unset();

@@ -120,7 +120,6 @@ if (submitBtn) {
         });
       }
     } catch (error) {
-      console.error("Caught Error:", error);
       Swal.fire({
         icon: "error",
         title: "Request Failed",

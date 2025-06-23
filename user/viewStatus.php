@@ -7,6 +7,10 @@ require_once '../auth/auth-check.php';
 
 // Safely get the refid parameter
 $ref_id = isset($_GET['refid']) ? $_GET['refid'] : '';
+if ($ref_id !== '' && (!ctype_digit($ref_id) || strlen($ref_id) !== 6)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid reference ID format.']);
+    exit;
+}
 include '../includes/header.php';
 ?>
 </head>
@@ -52,18 +56,18 @@ include '../includes/header.php';
 <div class='card mt-5 shadow-sm border-0 rounded-4'>
   <div class='card-header text-white rounded-top-4' style='background:#F15922; font-weight:600; font-size:1.15rem;'>📄 Complaint Details</div>
   <ul class='list-group list-group-flush'>
-    <li class='list-group-item'><strong>🆔 Ref ID:</strong> {$row['refid']}</li>
-    <li class='list-group-item'><strong>🙍 Name:</strong> {$row['name']}</li>
-    <li class='list-group-item'><strong>📧 Email:</strong> {$row['email']}</li>
-    <li class='list-group-item'><strong>📞 Phone:</strong> {$row['phone']}</li>
-    <li class='list-group-item'><strong>📍 Location:</strong> {$row['location']}</li>
-    <li class='list-group-item'><strong>🏷️ Category:</strong> {$row['category']}</li>
-    <li class='list-group-item'><strong>📝 Complaint:</strong> {$row['complaint']}</li>
+    <li class='list-group-item'><strong>📄 Ref ID:</strong> " . htmlspecialchars($row['refid']) . "</li>
+    <li class='list-group-item'><strong>🙍 Name:</strong> " . htmlspecialchars($row['name']) . "</li>
+    <li class='list-group-item'><strong>📧 Email:</strong> " . htmlspecialchars($row['email']) . "</li>
+    <li class='list-group-item'><strong>📞 Phone:</strong> " . htmlspecialchars($row['phone']) . "</li>
+    <li class='list-group-item'><strong>📍 Location:</strong> " . htmlspecialchars($row['location']) . "</li>
+    <li class='list-group-item'><strong>🏷️ Category:</strong> " . htmlspecialchars($row['category']) . "</li>
+    <li class='list-group-item'><strong>📝 Complaint:</strong> " . htmlspecialchars($row['complaint']) . "</li>
     <li class='list-group-item'><strong>📊 Status:</strong> 
-      <span class='badge bg-{$badgeClass} px-3 py-2' style='font-size:1rem;'>{$row['status']}</span>
+      <span class='badge bg-{$badgeClass} px-3 py-2' style='font-size:1rem;'>" . htmlspecialchars($row['status']) . "</span>
     </li>
-    <li class='list-group-item'><strong>💬 Response:</strong> {$row['response']}</li>
-    <li class='list-group-item'><strong>📅 Last Update:</strong> {$row['updated_at']}</li>
+    <li class='list-group-item'><strong>💬 Response:</strong> " . htmlspecialchars($row['response']) . "</li>
+    <li class='list-group-item'><strong>📅 Last Update:</strong> " . htmlspecialchars($row['updated_at']) . "</li>
   </ul>
   <div class='card-body text-center'>
     <button class='btn btn-outline-danger rounded-pill px-4' id='return' style='font-weight:600;'><i class='fas fa-arrow-left'></i> Return to Dashboard</button>

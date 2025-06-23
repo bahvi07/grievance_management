@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       } catch (error) {
         toastr.error("An error occurred. Please try again later.");
-        console.error(error);
       } finally {
         // Re-enable button and restore original text
         submitBtn.disabled = false;

@@ -68,15 +68,15 @@ if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
           while ($row = $result->fetch_assoc()) {
             $badgeClass = ($row['status'] === 'Resolved') ? 'success' : 'warning';
             echo "<tr>
-                    <td>{$row['refid']}</td>
-                    <td>{$row['name']}</td>
-                    <td>{$row['email']}</td>
-                    <td>{$row['phone']}</td>
-                    <td>{$row['complaint']}</td>
-                    <td>{$row['category']}</td>
-                    <td>{$row['location']}</td>
-                    <td><span class='badge bg-{$badgeClass}'>{$row['status']}</span></td>
-                    <td>{$row['response']}</td>
+                    <td>" . htmlspecialchars($row['refid']) . "</td>
+                    <td>" . htmlspecialchars($row['name']) . "</td>
+                    <td>" . htmlspecialchars($row['email']) . "</td>
+                    <td>" . htmlspecialchars($row['phone']) . "</td>
+                    <td>" . htmlspecialchars($row['complaint']) . "</td>
+                    <td>" . htmlspecialchars($row['category']) . "</td>
+                    <td>" . htmlspecialchars($row['location']) . "</td>
+                    <td><span class='badge bg-{$badgeClass}'>" . htmlspecialchars($row['status']) . "</span></td>
+                    <td>" . htmlspecialchars($row['response']) . "</td>
                   </tr>";
           }
         } else {

@@ -78,7 +78,13 @@ if ($result->num_rows === 1) {
         $_SESSION['user_phone'] = $phone;
         $_SESSION['user_name'] = $user_name;
         $_SESSION['user_token'] = $token;
-        setcookie("user_token", $token, time() + (86400 * 30), "/", "", false, true);
+        setcookie("user_token", $token, [
+            'expires' => time() + (86400 * 30),
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
 
         echo json_encode(['status' => 'success']);
     } else {

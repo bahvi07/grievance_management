@@ -42,6 +42,30 @@ try {
         ]);
         exit;
     }
+    // Name validation
+    if (strlen($name) < 2 || strlen($name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $name)) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Name must be 2-50 letters and spaces only.'
+        ]);
+        exit;
+    }
+    // Feedback validation
+    if (strlen($feedback) < 10 || strlen($feedback) > 1000) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Feedback must be 10-1000 characters.'
+        ]);
+        exit;
+    }
+    // Phone validation (if provided)
+    if ($user_phone !== '' && strlen(preg_replace('/[^0-9]/', '', $user_phone)) !== 10) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Phone must be 10 digits if provided.'
+        ]);
+        exit;
+    }
 
     // Insert into database
     $stmt = $conn->prepare("INSERT INTO feedback (user_name, user_phone, feedback) VALUES (?, ?, ?)");

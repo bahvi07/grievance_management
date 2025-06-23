@@ -44,6 +44,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image = $_POST['image'] ?? '';
     $user_email = $_POST['email'] ?? '';
 
+    // Validate department email
+    $to = filter_var(trim($to), FILTER_SANITIZE_EMAIL);
+    if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+        sendJsonResponse(false, 'Invalid department email format!');
+    }
+    // Validate user email
+    $user_email = filter_var(trim($user_email), FILTER_SANITIZE_EMAIL);
+    if (!empty($user_email) && !filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
+        sendJsonResponse(false, 'Invalid user email format!');
+    }
+    // Validate phone (10 digits)
+    $phone = preg_replace('/[^0-9]/', '', $phone);
+    if (!empty($phone) && strlen($phone) !== 10) {
+        sendJsonResponse(false, 'Invalid phone number. It must be 10 digits.');
+    }
+    // Validate name (letters, spaces, 2-50 chars)
+    $name = trim($name);
+    if (strlen($name) < 2 || strlen($name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $name)) {
+        sendJsonResponse(false, 'Name must be 2-50 letters and spaces only.');
+    }
+    // Validate location (length)
+    $location = trim($location);
+    if (strlen($location) < 2 || strlen($location) > 100) {
+        sendJsonResponse(false, 'Location must be 2-100 characters.');
+    }
+    // Validate description (length)
+    $description = trim($description);
+    if (strlen($description) <=2 || strlen($description) > 1000) {
+        sendJsonResponse(false, 'Description must be 5-1000 characters.');
+    }
+
     if (empty($to) || empty($refid)) {
         sendJsonResponse(false, 'Email or Reference ID is missing!');
     }

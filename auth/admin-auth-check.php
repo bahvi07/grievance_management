@@ -52,7 +52,13 @@ if (!$sessionValid) {
             } elseif ($token_data) {
                 // Validator was incorrect. This is a theft attempt. Delete all tokens for this admin.
                 $conn->query("DELETE FROM admin_auth_tokens WHERE admin_id = '" . $conn->real_escape_string($token_data['admin_id']) . "'");
-                setcookie("admin_token", "", time() - 3600, "/"); // Clear cookie
+                setcookie("admin_token", "", [
+                    'expires' => time() - 3600,
+                    'path' => '/',
+                    'secure' => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict',
+                ]);
                 error_log("Invalid validator for admin_id: {$token_data['admin_id']}. All tokens deleted.", 3, LOG_FILE);
             }
         }

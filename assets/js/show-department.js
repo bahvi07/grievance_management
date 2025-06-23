@@ -105,7 +105,6 @@ $('#area').on('input', function () {
                     }
                 })
                 .catch(error => {
-                    console.error('Deletion error:', error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',

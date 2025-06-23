@@ -95,7 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
                                 // Set the cookie on the user's browser
                                 $cookie_value = $selector . ':' . $validator;
-                                setcookie("admin_token", $cookie_value, time() + (86400 * 30), "/", "", false, true);
+                                setcookie("admin_token", $cookie_value, [
+                                    'expires' => time() + (86400 * 30),
+                                    'path' => '/',
+                                    'secure' => true,
+                                    'httponly' => true,
+                                    'samesite' => 'Strict',
+                                ]);
                                 error_log("Admin 'Remember Me' token set for admin_id: " . $admin['admin_id'], 3, LOG_FILE);
                             }
                             

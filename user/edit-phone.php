@@ -16,6 +16,12 @@ try {
         $editPhone = $_POST['newPhone'];
         $oldPhone = $_SESSION['user_phone'];
 
+        // Validate phone number (10 digits, numeric)
+        $editPhone = preg_replace('/[^0-9]/', '', $editPhone);
+        if (strlen($editPhone) !== 10) {
+            throw new Exception('Invalid phone number. It must be 10 digits.');
+        }
+
         $stmt = $conn->prepare('UPDATE complaints SET phone=? WHERE phone=?');
         $stmt->bind_param('ss', $editPhone, $oldPhone);
 
