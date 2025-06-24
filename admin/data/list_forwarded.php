@@ -4,8 +4,7 @@ header('Content-Type: application/json');
 
 // This script retrieves forwarded complaints from the database
 try {
-    $sql = "SELECT 
-                cf.id,
+    $sql = "SELECT  
                 cf.complaint_ref_id,
                 cf.dept_name,
                 cf.dept_category,

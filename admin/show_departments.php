@@ -146,11 +146,11 @@ while($row = $result->fetch_assoc()){
     </div>
   </div>
   <div class="tab-pane fade" id="forwarded" role="tabpanel">
-    <div class="table-responsive">
-        <table id="forwardedComplaintsTable" class="table table-striped table-bordered" style="width:100%">
-            <thead>
+    <div class="table-responsive bg-light rounded shadow-sm p-3">
+        <table id="forwardedComplaintsTable" class="table table-hover table-borderless" style="width:100%">
+            <thead class='table-dark'>
                 <tr>
-                    <th>ID</th>
+                    <th>#</th>
                     <th>Ref ID</th>
                     <th>Dept Name</th>
                     <th>Dept Category</th>
@@ -328,8 +328,14 @@ $(document).ready(function() {
             "type": "POST", // Using POST as it's often better for APIs
             "dataSrc": "data"
         },
+        "columnDefs": [ {
+            "searchable": false,
+            "orderable": false,
+            "targets": 0
+        } ],
+        "order": [[ 1, 'desc' ]],
         "columns": [
-            { "data": "id" },
+            { "data": null, "defaultContent": "" }, // For the manual ID
             { "data": "complaint_ref_id" },
             { "data": "dept_name" },
             { "data": "dept_category" },
@@ -352,6 +358,12 @@ $(document).ready(function() {
             forwardedTable.columns.adjust().responsive.recalc();
         }
     });
+
+    forwardedTable.on('order.dt search.dt', function () {
+        forwardedTable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+            cell.innerHTML = i + 1;
+        } );
+    }).draw();
 });
 </script>
 </body>
