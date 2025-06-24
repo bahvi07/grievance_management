@@ -20,8 +20,13 @@
 <!-- Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-<!-- DataTables -->
+<!-- DataTables Core JS -->
 <script src="<?php echo BASE_URL; ?>assets/datatables/datatables.min.js"></script>
+
+<!-- DataTables Responsive JS from CDN -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
 <!--Excel/CSV-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 

@@ -67,11 +67,11 @@ include '../includes/admin-nav.php';
 
     <!-- Add this at the top of your main content area -->
     <ul class="nav nav-tabs" id="deptTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="dept-list-tab" data-toggle="tab" href="#dept-list" role="tab">Department List</a>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="dept-list-tab" data-bs-toggle="tab" href="#dept-list" role="tab" aria-controls="dept-list" aria-selected="true">Department List</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" id="forwarded-tab" data-toggle="tab" href="#forwarded" role="tab">Forwarded Complaints</a>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="forwarded-tab" data-bs-toggle="tab" href="#forwarded" role="tab" aria-controls="forwarded" aria-selected="false">Forwarded Complaints</a>
       </li>
     </ul>
     <div class="tab-content" id="deptTabContent">
@@ -146,9 +146,26 @@ while($row = $result->fetch_assoc()){
     </div>
   </div>
   <div class="tab-pane fade" id="forwarded" role="tabpanel">
-    <!-- FORWARDED COMPLAINTS TABLE WILL GO HERE -->
-    <p>Loading forwarded complaints...</p>
-    
+    <div class="table-responsive">
+        <table id="forwardedComplaintsTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ref ID</th>
+                    <th>Dept Name</th>
+                    <th>Dept Category</th>
+                    <th>Complaint</th>
+                    <th>User Name</th>
+                    <th>User Location</th>
+                    <th>Forwarded At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be loaded here by DataTables -->
+            </tbody>
+        </table>
+    </div>
   </div>
 </div>
 </div>
@@ -299,6 +316,44 @@ while($row = $result->fetch_assoc()){
     include '../includes/admin-footer.php';
     ?>
 
+<script>
+$(document).ready(function() {
+    // Initialize existing DataTable for departments
+    $('#departmentsTable').DataTable();
+
+    // Initialize new DataTable for forwarded complaints
+    var forwardedTable = $('#forwardedComplaintsTable').DataTable({
+        "ajax": {
+            "url": "./data/list_forwarded.php",
+            "type": "POST", // Using POST as it's often better for APIs
+            "dataSrc": "data"
+        },
+        "columns": [
+            { "data": "id" },
+            { "data": "complaint_ref_id" },
+            { "data": "dept_name" },
+            { "data": "dept_category" },
+            { "data": "complaint" },
+            { "data": "user_name" },
+            { "data": "user_location" },
+            { "data": "forwarded_at" },
+            { "data": "status" }
+        ],
+        "responsive": true,
+        "scrollX": true,
+        "autoWidth": false
+    });
+
+    // Handle tab switching to redraw DataTable
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        // Check if the new tab is the one with our table
+        if (e.target.hash == '#forwarded') {
+            // Redraw the table to recalculate column widths
+            forwardedTable.columns.adjust().responsive.recalc();
+        }
+    });
+});
+</script>
 </body>
 </html>
 
