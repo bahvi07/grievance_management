@@ -39,7 +39,7 @@ try {
     // Handle file upload
     if (isset($_FILES['img']) && $_FILES['img']['error'] === UPLOAD_ERR_OK) {
         $uploadDir = '../assets/images/complain_upload/';
-        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
             throw new Exception("Could not create upload directory");
         }
 
@@ -85,7 +85,7 @@ try {
 
     // Generate unique refId
     do {
-        $refId = mt_rand(100000, 999999);
+        $refId = random_int(100000, 999999);
         $checkQuery = $conn->prepare("SELECT refid FROM complaints WHERE refid = ?");
         $checkQuery->bind_param("i", $refId);
         $checkQuery->execute();

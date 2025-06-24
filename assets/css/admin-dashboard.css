@@ -140,6 +140,9 @@ body{
   padding-bottom: 120px; /* Make sure this is present and not overridden */
 }
 
+.nav-tabs{
+    border: 0;
+}
         .nav-tabs .nav-link.active {
             background-image: linear-gradient(to bottom, #FF7E5F, #FD3A69);
             color: white;
@@ -148,6 +151,12 @@ body{
 
         .nav-tabs .nav-link {
             color: #FD3A69;
+        }
+
+        /* Department list tab margin */
+        #dept-list-tab {
+            margin-left: 10px;
+            border: none;
         }
 
         /* Add shadow to Bootstrap modal */

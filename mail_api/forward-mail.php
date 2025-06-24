@@ -34,8 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!CSRFProtection::verifyPostToken()) {
         sendJsonResponse(false, 'Security validation failed. Please refresh the page and try again.');
     }
-    
+    $dept_id = $_POST['dept_id'] ?? '';
     $to = $_POST['dept_email'] ?? '';
+    $dept_name=$_POST['dept_name']??'';
+    $dept_category=$_POST['dept_category']??'';
+    $dept_area=$_POST['dept_area']??'';
+    $dept_phone=$_POST['dept_phone']??'';
     $refid = $_POST['refid'] ?? '';
     $name = $_POST['name'] ?? 'Unknown';
     $phone = $_POST['phone'] ?? '';
@@ -59,16 +63,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($phone) && strlen($phone) !== 10) {
         sendJsonResponse(false, 'Invalid phone number. It must be 10 digits.');
     }
+    // Validate Dept Phone
+    $dept_phone = preg_replace('/[^0-9]/', '', $dept_phone);
+    if (!empty($dept_phone) && strlen($dept_phone) !== 10) {
+        sendJsonResponse(false, 'Invalid phone number. It must be 10 digits.');
+    }
+    
+
     // Validate name (letters, spaces, 2-50 chars)
     $name = trim($name);
     if (strlen($name) < 2 || strlen($name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $name)) {
         sendJsonResponse(false, 'Name must be 2-50 letters and spaces only.');
     }
+    // Validate dept Name
+    $dept_name = trim($dept_name);
+    if (strlen($dept_name) < 2 || strlen($dept_name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $dept_name)) {
+        sendJsonResponse(false, 'Name must be 2-50 letters and spaces only.');
+    }
+    
+
     // Validate location (length)
     $location = trim($location);
     if (strlen($location) < 2 || strlen($location) > 100) {
         sendJsonResponse(false, 'Location must be 2-100 characters.');
     }
+    // Validate Dept Area
+    $dept_area = trim($dept_area);
+    if (strlen($dept_area) < 2 || strlen($dept_area) > 100) {
+        sendJsonResponse(false, 'Location must be 2-100 characters.');
+    }
+    // Validate Dept Category
+    $dept_category=trim($dept_category);
+    if(empty($dept_category)){
+        sendJsonResponse(false,'Category Must be Selected');
+    }
+
     // Validate description (length)
     $description = trim($description);
     if (strlen($description) <=2 || strlen($description) > 1000) {
@@ -78,7 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($to) || empty($refid)) {
         sendJsonResponse(false, 'Email or Reference ID is missing!');
     }
-
+// Validate Dept id
+if(empty($dept_id)){
+    sendJsonResponse(false,'Department id is missing!');
+}
     try {
         $mail = new PHPMailer(true);
 
@@ -152,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // If mail is sent, update the status
         updateStatus($refid, $conn);
-
+updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description);
         sendJsonResponse(true, 'Complaint forwarded successfully!');
 
     } catch (Exception $e) {
@@ -172,4 +204,33 @@ function updateStatus($ref, $conn) {
         $stmt->close();
     }
 }
+
+function updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description) {
+    if ($conn) {
+        // First, get the complaint's primary key `id` from the `refid`
+        $complaint_pk_id = null;
+        $stmt_select = $conn->prepare("SELECT id FROM complaints WHERE refid = ?");
+        $stmt_select->bind_param("s", $refid);
+        $stmt_select->execute();
+        $result = $stmt_select->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $complaint_pk_id = $row['id'];
+        }
+        $stmt_select->close();
+
+        if ($complaint_pk_id === null) {
+            // Log an error if the refid is invalid and doesn't correspond to a complaint
+            error_log("Forwarding failed: No complaint found with refid: $refid", 3, '../logs/error.log');
+            return; // Stop execution
+        }
+
+        $stmt = $conn->prepare("INSERT INTO complaint_forwarded(complaint_id, dept_id, complaint_ref_id, status, dept_name, dept_category, dept_area, complaint, user_name, user_location, dept_phone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $status = 'Forwarded';
+        // Use the correct primary key for complaint_id and add the ref_id
+        $stmt->bind_param('iisssssssss', $complaint_pk_id, $dept_id, $refid, $status, $dept_name, $dept_category, $dept_area, $description, $name, $location, $dept_phone);
+        $stmt->execute();
+        $stmt->close();
+    }
+}
+
 ?>

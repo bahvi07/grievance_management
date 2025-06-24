@@ -52,7 +52,15 @@ if ($result->num_rows > 0) {
           <form method='POST' action='../mail_api/forward-mail.php' class='d-inline ajax-forward-form'>"
             . csrf_field() .
             "<input type='hidden' name='refid' value='" . htmlspecialchars($refid) . "'>
+            <input type='hidden' name='dept_id' value='" . htmlspecialchars($row['id']) . "'>
             <input type='hidden' name='dept_email' value='" . htmlspecialchars($row['email']) . "'>
+            <input type='hidden' name='dept_name' value='" . htmlspecialchars($row['name']) . "'>
+            <input type='hidden' name='dept_category' value='" . htmlspecialchars($row['category']) . "'>
+            <input type='hidden' name='dept_area' value='" . htmlspecialchars($row['area']) . "'>
+            <input type='hidden' name='dept_phone' value='" . htmlspecialchars($row['phone']) . "'>
+            
+            
+            
             <input type='hidden' name='name' value='" . htmlspecialchars($complaintData['name'] ?? '') . "'>
             <input type='hidden' name='email' value='" . htmlspecialchars($complaintData['email'] ?? '') . "'>
             <input type='hidden' name='phone' value='" . htmlspecialchars($complaintData['phone'] ?? '') . "'>

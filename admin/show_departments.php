@@ -64,6 +64,18 @@ include '../includes/admin-nav.php';
             </div>
         </div>
     </div>
+
+    <!-- Add this at the top of your main content area -->
+    <ul class="nav nav-tabs" id="deptTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="dept-list-tab" data-toggle="tab" href="#dept-list" role="tab">Department List</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="forwarded-tab" data-toggle="tab" href="#forwarded" role="tab">Forwarded Complaints</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="deptTabContent">
+      <div class="tab-pane fade show active" id="dept-list" role="tabpanel">
         <!-- Complaints Table -->
         <div class="table-responsive bg-light rounded shadow-sm p-3">
         <table id="departmentTable" class="table table-hover table-borderless">
@@ -132,6 +144,13 @@ while($row = $result->fetch_assoc()){
             </tbody>
         </table>
     </div>
+  </div>
+  <div class="tab-pane fade" id="forwarded" role="tabpanel">
+    <!-- FORWARDED COMPLAINTS TABLE WILL GO HERE -->
+    <p>Loading forwarded complaints...</p>
+    
+  </div>
+</div>
 </div>
 
 
