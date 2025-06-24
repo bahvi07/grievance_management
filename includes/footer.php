@@ -21,7 +21,7 @@
 <script src="<?php echo BASE_URL; ?>assets/js/user-dashboard.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/mycomp.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/feedback.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/viewStatus.js"></script>
+
 
 <!-- Toastr Configuration -->
 <script>

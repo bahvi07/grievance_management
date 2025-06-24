@@ -44,9 +44,16 @@ try {
 
     // Now update the complaint
     $stmt = $conn->prepare("UPDATE complaints SET status = 'resolve', response = ?, updated_at = CURRENT_TIMESTAMP WHERE refid = ?");
+    $sql=$conn->prepare("UPDATE complaint_forwarded SET status='resolve' WHERE complaint_ref_id=?");
+
     $stmt->bind_param("ss", $note, $refid);
-    
-    if ($stmt->execute()) {
+    $sql->bind_param("s",$refid);
+
+    // Execute both queries independently
+    $stmt_success = $stmt->execute();
+    $sql_success = $sql->execute();
+
+    if ($stmt_success && $sql_success) {
         if ($stmt->affected_rows > 0) {
             error_log("Successfully updated complaint status for refid: " . $refid);
             $response = [
@@ -58,10 +65,11 @@ try {
             throw new Exception('No changes were made to the complaint');
         }
     } else {
-        error_log("Failed to update complaint. SQL Error: " . $stmt->error);
-        throw new Exception('Failed to update complaint status: ' . $stmt->error);
+        error_log("Failed to update complaint. Main table error: " . $stmt->error . ", Forwarded table error: " . $sql->error);
+        throw new Exception('Failed to update complaint status');
     }
     $stmt->close();
+    $sql->close();
 } catch (Exception $e) {
     error_log('Error in update-status.php: ' . $e->getMessage());
     $response['message'] = $e->getMessage();
