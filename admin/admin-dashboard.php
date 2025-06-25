@@ -18,6 +18,22 @@ include '../includes/admin-nav.php';
     <div class="dashboard-content row">
         <div class="col main-content">
             <div class="card-container">
+                <!-- Total Complaints -->
+                <div class="status-card bg-dark text-white">
+                    <i class="fas fa-list-alt fa-2x mb-2"></i>
+                    <h5>Total Complaints</h5>
+                    <span class="count">
+                        <?php
+                        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM complaints");
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $totalCount = ($result && $row = $result->fetch_assoc()) ? $row['total'] : 0;
+                        echo $totalCount;
+                        $stmt->close();
+                        ?>
+                    </span>
+                </div>
+
                 <!-- New Complaints -->
                 <div class="status-card bg-primary text-white">
                     <i class="fas fa-envelope-open-text fa-2x mb-2"></i>
@@ -113,6 +129,8 @@ include '../includes/admin-nav.php';
                         ?>
                     </span>
                 </div>
+                <!-- Total Complaints -->
+                  
             </div>
             <div class="chart-container">
                 <!-- Chart Container -->
