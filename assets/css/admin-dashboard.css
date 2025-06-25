@@ -137,9 +137,15 @@ body{
   margin-top: 100px;
   margin-right: 0;
   margin-left: 245px;
-  padding-bottom: 120px; /* Make sure this is present and not overridden */
+  padding:20px 10px 120px 15px; /* Make sure this is present and not overridden */
 }
 
+.dept-center {
+  margin-top: 80px;
+  margin-right: 0;
+  margin-left: 245px;
+  padding:20px 10px 120px 15px; /* Make sure this is present and not overridden */
+}
 .nav-tabs{
     border: 0;
 }
@@ -152,13 +158,6 @@ body{
         .nav-tabs .nav-link {
             color: #FD3A69;
         }
-
-        /* Department list tab margin */
-        #dept-list-tab {
-            margin-left: 10px;
-            border: none;
-        }
-
         /* Add shadow to Bootstrap modal */
         .modal-content {
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), 0 1.5px 6px rgba(0, 0, 0, 0.15);

@@ -15,7 +15,7 @@ include '../includes/admin-nav.php';
             Admin, <?= $_SESSION['admin_name'] ?? 'Admin' ?>
         </div>
     </div>
-    <div class="complaint-center row ">
+    <div class="dept-center row ">
         <!-- Nav Tabs -->
        <div class="d-flex justify-content-between align-items-center mb-4">
     </div>
@@ -52,8 +52,8 @@ include '../includes/admin-nav.php';
         <!-- Buttons Container -->
         <div class="col-md-6 d-flex align-items-end">
             <div>
-                <a href="../admin/reports/excel.php?type=departments&filter=all" class="btn btn-success">
-                    <i class="fa fa-download"></i>
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#downloadModal">
+                 <i class="fa fa-download"></i>   
                 </a>
             </div>
             <div class="ms-2">
@@ -66,7 +66,7 @@ include '../includes/admin-nav.php';
     </div>
 
     <!-- Add this at the top of your main content area -->
-    <ul class="nav nav-tabs" id="deptTab" role="tablist">
+    <ul class="nav nav-tabs mb-2" id="deptTab" role="tablist">
       <li class="nav-item" role="presentation">
         <a class="nav-link active" id="dept-list-tab" data-bs-toggle="tab" href="#dept-list" role="tab" aria-controls="dept-list" aria-selected="true">Department List</a>
       </li>
@@ -74,17 +74,16 @@ include '../includes/admin-nav.php';
         <a class="nav-link" id="forwarded-tab" data-bs-toggle="tab" href="#forwarded" role="tab" aria-controls="forwarded" aria-selected="false">Forwarded Complaints</a>
       </li>
     </ul>
-    <div class="tab-content" id="deptTabContent">
-      <div class="tab-pane fade show active" id="dept-list" role="tabpanel">
         <!-- Complaints Table -->
         <div class="table-responsive bg-light rounded shadow-sm p-3">
+          <div id="deptTableContainer">
         <table id="departmentTable" class="table table-hover table-borderless">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
                     <th>Category</th>
                     <th>Area</th>
-                    <th>Name</th>
+                    <th>Name</th> 
                     <th>Contact</th>
                     <th>Gmail</th>
                     <th>Action</th>
@@ -143,13 +142,11 @@ while($row = $result->fetch_assoc()){
 ?>
             </tbody>
         </table>
-    </div>
-  </div>
-  <div class="tab-pane fade" id="forwarded" role="tabpanel">
-    <div class="table-responsive bg-light rounded shadow-sm p-3">
+        </div>
+        <div id="forwardComplaintContainer" class="d-none">
         <table id="forwardedComplaintsTable" class="table table-hover table-borderless" style="width:100%">
-            <thead class='table-dark'>
-                <tr>
+            <thead class="table-dark">
+                <tr style="border-radius:20px;">
                     <th>#</th>
                     <th>Ref ID</th>
                     <th>Dept Name</th>
@@ -162,14 +159,71 @@ while($row = $result->fetch_assoc()){
                 </tr>
             </thead>
             <tbody>
-                <!-- Data will be loaded here by DataTables -->
+                <?php
+                try {
+                    $sql = "SELECT  
+                                cf.complaint_ref_id,
+                                cf.dept_name,
+                                cf.dept_category,
+                                cf.complaint,
+                                cf.user_name,
+                                cf.user_location,
+                                cf.forwarded_at,
+                                cf.status
+                            FROM 
+                                complaint_forwarded cf
+                            ORDER BY 
+                                cf.forwarded_at DESC";
+
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    $count = 1;
+                    while ($row = $result->fetch_assoc()) {
+                        $status = htmlspecialchars($row['status']);
+                        $statusClass = '';
+
+                        switch (strtolower($status)) {
+                            case 'forwarded':
+                                $statusClass = 'badge bg-warning text-dark';
+                                break;
+                            case 'resolve':
+                                $statusClass = 'badge bg-success';
+                                break;
+                            default:
+                                $statusClass = 'badge bg-secondary';
+                        }
+
+                        echo "<tr>
+                                <td>" . $count++ . "</td>
+                                <td>" . htmlspecialchars($row['complaint_ref_id']) . "</td>
+                                <td>" . htmlspecialchars($row['dept_name']) . "</td>
+                                <td>" . htmlspecialchars($row['dept_category']) . "</td>
+                                <td>" . htmlspecialchars($row['complaint']) . "</td>
+                                <td>" . htmlspecialchars($row['user_name']) . "</td>
+                                <td>" . htmlspecialchars($row['user_location']) . "</td>
+                                <td>" . htmlspecialchars($row['forwarded_at']) . "</td>
+                                <td><span class='" . $statusClass . "'>" . ucfirst($status) . "</span></td>
+                              </tr>";
+                    }
+
+                    $stmt->close();
+                } catch (Exception $e) {
+                    echo "<tr><td colspan='9' class='text-danger'>Error loading data</td></tr>";
+                    error_log($e->getMessage());
+                }
+                ?>
             </tbody>
         </table>
     </div>
-  </div>
-</div>
-</div>
+    </div>
+  
 
+  </div>
+
+</div>
+ 
 
 <div class="modal fade" id="editDepartment" tabindex="-1" aria-labelledby="EditdepartmentDetailsLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -312,60 +366,90 @@ while($row = $result->fetch_assoc()){
     </div>
   </div>
 </div>
+   <!-- Download Modal -->
+<div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form action="../admin/reports/excel.php" method="POST" target="_blank" id="downloadExcelForm">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="downloadModalLabel">
+                        <i class="fas fa-download me-2"></i>Download Complaints Data
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="complaintStatus" class="form-label fw-semibold">Select Complaint Type</label>
+                        <select class="form-select" id="complaintStatus" name="complaint_status" required>
+                            <option value="departments">Departments List</option>
+                            <option value="forwarded_complaints">Forwarded Complaints</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-download me-1"></i>Download
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize DataTables
+
+    $('#forwardedComplaintsTable').DataTable({
+    });
+
+    // Tab toggling logic
+    const deptTab = document.querySelector('#dept-list-tab');
+    const forwardedTab = document.querySelector('#forwarded-tab');
+    const deptContainer = document.querySelector('#deptTableContainer');
+    const forwardContainer = document.querySelector('#forwardComplaintContainer');
+
+    deptTab.addEventListener('click', () => {
+        deptContainer.classList.remove('d-none');
+        forwardContainer.classList.add('d-none');
+    });
+
+    forwardedTab.addEventListener('click', () => {
+        forwardContainer.classList.remove('d-none');
+        deptContainer.classList.add('d-none');
+    });
+
+    // Optional: Activate correct container on reload
+    const activeTab = document.querySelector('.nav-link.active');
+    if (activeTab && activeTab.id === 'forwarded-tab') {
+        forwardContainer.classList.remove('d-none');
+        deptContainer.classList.add('d-none');
+    }
+
+    // Set the type input based on dropdown selection
+    const complaintStatus = document.getElementById('complaintStatus');
+    const downloadType = document.getElementById('downloadType');
+    const downloadForm = document.getElementById('downloadExcelForm');
+    if (complaintStatus && downloadType && downloadForm) {
+        complaintStatus.addEventListener('change', function() {
+            downloadType.value = this.value;
+        });
+        // Set type before submit in case user doesn't change dropdown
+        downloadForm.addEventListener('submit', function() {
+            downloadType.value = complaintStatus.value;
+        });
+    }
+});
+</script>
+
     <?php
     include '../includes/admin-footer.php';
     ?>
 
-<script>
-$(document).ready(function() {
-    // Initialize existing DataTable for departments
-    $('#departmentsTable').DataTable();
-
-    // Initialize new DataTable for forwarded complaints
-    var forwardedTable = $('#forwardedComplaintsTable').DataTable({
-        "ajax": {
-            "url": "./data/list_forwarded.php",
-            "type": "POST", // Using POST as it's often better for APIs
-            "dataSrc": "data"
-        },
-        "columnDefs": [ {
-            "searchable": false,
-            "orderable": false,
-            "targets": 0
-        } ],
-        "order": [[ 1, 'desc' ]],
-        "columns": [
-            { "data": null, "defaultContent": "" }, // For the manual ID
-            { "data": "complaint_ref_id" },
-            { "data": "dept_name" },
-            { "data": "dept_category" },
-            { "data": "complaint" },
-            { "data": "user_name" },
-            { "data": "user_location" },
-            { "data": "forwarded_at" },
-            { "data": "status" }
-        ],
-        "responsive": true,
-        "scrollX": true,
-        "autoWidth": false
-    });
-
-    // Handle tab switching to redraw DataTable
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-        // Check if the new tab is the one with our table
-        if (e.target.hash == '#forwarded') {
-            // Redraw the table to recalculate column widths
-            forwardedTable.columns.adjust().responsive.recalc();
-        }
-    });
-
-    forwardedTable.on('order.dt search.dt', function () {
-        forwardedTable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-            cell.innerHTML = i + 1;
-        } );
-    }).draw();
-});
-</script>
 </body>
 </html>
 

@@ -30,7 +30,7 @@ include '../includes/admin-nav.php';
             Admin, <?= $_SESSION['admin_name'] ?? 'Admin' ?>
         </div>
     </div>
-    <div class="complaint-center row ">
+    <div class="complaint-center row">
         <!-- Display session messages -->
         <?php if (isset($_SESSION['success_message'])): ?>
             <div class="alert alert-success"><?= $_SESSION['success_message'] ?></div>
@@ -60,7 +60,7 @@ include '../includes/admin-nav.php';
         </ul>
 
         <!-- Complaints Table -->
-        <div class="table-responsive bg-light rounded shadow-sm p-3">
+        <div class="table-responsive bg-light rounded shadow-sm ">
             <!-- Pending Complaints Container -->
             <div id="pendingTableContainer" >
                 <table id="pendingTable" class="table complaintTable table-hover table-borderless">

@@ -8,6 +8,9 @@
   font-size: 0.88rem;
   
 }
+.table-responsive{
+  overflow-y:hidden;
+}
 .complaintTable thead {
   background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
   color: #fff;
@@ -124,7 +127,7 @@ background-color: white;
 #departmentTable,
 #forwardedComplaintsTable {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 16px ;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
   margin-bottom: 0;
@@ -151,39 +154,6 @@ background-color: white;
 }
 
 #departmentTable tbody tr:hover,
-#forwardedComplaintsTable tbody tr:hover {
-  background: #fff6f0;
-}
-
-/* forwardedComplaintsTable */
-#forwardedComplaintsTable {
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(241, 89, 34, 0.08);
-  margin-bottom: 0;
-   font-family: 'Segoe UI', sans-serif;
-  font-size: 0.88rem;
-}
-
-#forwardedComplaintsTable thead {
-  background: linear-gradient(90deg, #ff7e5f 0%, #fd3a69 100%);
-  color: #fff;
-  font-size: 1.05rem;
-  border: none;
-}
-
-#forwardedComplaintsTable th, #forwardedComplaintsTable td {
-  vertical-align: middle;
-  border: none;
-  padding: 0.80rem 1rem;
-  font-size: 0.88rem;
-}
-
-#forwardedComplaintsTable tbody tr {
-  transition: background 0.18s;
-}
-
 #forwardedComplaintsTable tbody tr:hover {
   background: #fff6f0;
 }
@@ -272,4 +242,10 @@ body {
   box-shadow: none !important;
   border-radius: 0 !important;
   padding: 0 !important;
+}
+
+/* Custom styling for DataTables pagination */
+.dataTables_paginate {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }

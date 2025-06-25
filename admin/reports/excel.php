@@ -1,9 +1,12 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 include '../../config/config.php';
 
-$allowedTypes = ['complaints', 'resolved', 'pending', 'rejected', 'forwarded'];
+$allowedTypes = ['complaints', 'resolved', 'pending', 'rejected', 'forwarded', 'departments','forwarded_complaints'];
 $type = $_GET['type'] ?? $_POST['type'] ?? 'complaints';
 $filter = $_GET['filter'] ?? $_POST['complaint_status'] ?? 'all';
+$tp=$_POST['complaint_status'];
 if (!in_array($type, $allowedTypes)) {
     die('Invalid type parameter.');
 }
@@ -15,7 +18,7 @@ header('Content-Type: text/csv');
 
 $output = fopen('php://output', 'w');
 
-if ($type === 'departments') {
+if ($tp === 'departments') {
     header('Content-Disposition: attachment; filename="departments_' . date('Y-m-d_H-i-s') . '.csv"');
 
     // Write headers
@@ -29,26 +32,43 @@ if ($type === 'departments') {
     } else {
         $stmt = $conn->prepare("SELECT * FROM departments");
     }
-    
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    // Export to CSV (or use your output stream)
-    while ($row = $result->fetch_assoc()) {
-        fputcsv($output, [
-            $id++,
-            $row['name'] ?? 'N/A',
-            $row['category'] ?? 'N/A',
-            $row['email'] ?? 'N/A',
-            $row['phone'] ?? 'N/A',
-            $row['area'] ?? 'N/A',
-            $row['created_at'] ?? '',
-            $row['updated_at'] ?? '',
-        ]);
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            fputcsv($output, [
+                $id++, $row['name'] ?? 'N/A', $row['category'] ?? 'N/A', $row['email'] ?? 'N/A',
+                $row['phone'] ?? 'N/A', $row['area'] ?? 'N/A', $row['created_at'] ?? '', $row['updated_at'] ?? ''
+            ]);
+        }
     }
-    
     $stmt->close();
-    
+
+}elseif($tp==='forwarded_complaints'){
+    header('Content-Disposition: attachment; filename="forwarded_complaints_' . date('Y-m-d_H-i-s') . '.csv"');
+    // Write headers
+    fputcsv($output, ['ID','Ref Id','Department Name', 'Dept Category', 'Complaint', 'User Name', 'User Location', 'Forwarded At', 'Status','Department Phone']);
+    $stmt = $conn->prepare("SELECT * FROM complaint_forwarded");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $id = 1;
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            fputcsv($output, [
+                $id++,
+                $row['complaint_ref_id'] ?? 'N/A',
+                $row['dept_name'] ?? 'N/A',
+                $row['dept_category'] ?? 'N/A',
+                $row['complaint'] ?? 'N/A',
+                $row['user_name'] ?? 'N/A',
+                $row['user_location'] ?? '',
+                $row['forwarded_at'] ?? '',
+                $row['status'] ?? '',
+                $row['dept_phone'] ?? '',
+            ]);
+        }
+    }
+    $stmt->close();
 } elseif ($type === 'complaints') {
     header('Content-Disposition: attachment; filename="complaints_' . $filter . '_' . date('Y-m-d_H-i-s') . '.csv"');
 
