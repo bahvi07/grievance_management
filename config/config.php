@@ -22,9 +22,7 @@ require_once __DIR__ . '/csrf.php';
 date_default_timezone_set('Asia/Kolkata');
 
 // Define base URL for assets (only if not already defined)
-if (!defined('BASE_URL')) {
-    define('BASE_URL', '/cms/');
-}
+define('BASE_URL', 'http://localhost/grievance_management/');
 
 // Define a secure log file path (only if not already defined)
 if (!defined('LOG_FILE')) {

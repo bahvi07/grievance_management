@@ -20,8 +20,8 @@ include '../includes/admin-nav.php';
   margin-left: 255px;
   padding-bottom: 85px;">
     
-        <div class="table-responsive bg-light rounded shadow-sm p-3" style="width: 95%;">
-            <table id="feedbackTable" class="table table-hover table-borderless" >
+        <div class="table-responsive feedback-table-container bg-light rounded shadow-sm p-3" style="width:90%;">
+            <table id="feedbackTable" class="table table-hover table-borderless feedback-table">
                 <thead class="table-dark">
                     <tr>
                         <th>Sr No.</th>

@@ -66,7 +66,7 @@ include '../includes/admin-nav.php';
                 <table id="pendingTable" class="table complaintTable table-hover table-borderless">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
+                            <th>Sr No.</th>
                             <th>Ref ID</th>
                             <th>Name</th>
                             <th>Contact</th>
@@ -150,7 +150,7 @@ include '../includes/admin-nav.php';
                 <table id="rejectedTable" class="table complaintTable table-hover table-borderless">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
+                            <th>Sr No.</th>
                             <th>Ref ID</th>
                             <th>Name</th>
                             <th>Contact</th>
@@ -231,7 +231,7 @@ include '../includes/admin-nav.php';
                 <table id="forwardedTable" class="table table-hover complaintTable table-borderless">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
+                            <th>Sr No.</th>
                             <th>Ref ID</th>
                             <th>Name</th>
                             <th>Contact</th>

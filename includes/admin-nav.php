@@ -94,6 +94,11 @@ $stmt->close();
         <i class="fas fa-eye"></i> Show Department
       </a>
     </li>
+      <li class="nav-item">
+      <a class="nav-link <?= ($currentPage == 'category.php') ? 'active' : '' ?>" href="./category.php">
+       <i class="fa-solid fa-square-plus"></i> Add Category
+      </a>
+    </li>
     <li class="nav-item">
       <a class="nav-link <?= ($currentPage == 'feed.php') ? 'active' : '' ?>" href="./feed.php">
         <i class="fas fa-chart-bar"></i> Feedback

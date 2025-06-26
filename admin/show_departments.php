@@ -80,7 +80,7 @@ include '../includes/admin-nav.php';
         <table id="departmentTable" class="table table-hover table-borderless">
             <thead class="table-dark">
                 <tr>
-                    <th>#</th>
+                    <th>Sr No.</th>
                     <th>Category</th>
                     <th>Area</th>
                     <th>Name</th> 
@@ -147,7 +147,7 @@ while($row = $result->fetch_assoc()){
         <table id="forwardedComplaintsTable" class="table table-hover table-borderless" style="width:100%">
             <thead class="table-dark">
                 <tr style="border-radius:20px;">
-                    <th>#</th>
+                    <th>Sr No.</th>
                     <th>Ref ID</th>
                     <th>Dept Name</th>
                     <th>Dept Category</th>
