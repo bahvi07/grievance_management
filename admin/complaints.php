@@ -240,7 +240,7 @@ include '../includes/admin-nav.php';
                             <th>Details</th>
                             <th>Image</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                            <th>Actions</th>    
                         </tr>
                     </thead>
                     <tbody class="">

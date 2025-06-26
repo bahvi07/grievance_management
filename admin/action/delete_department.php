@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
-require_once '../config/session-config.php';
+require_once '../../config/session-config.php';
 startSecureSession();
-require_once '../auth/admin-auth-check.php';
-require_once '../config/config.php';
+require_once '../../auth/admin-auth-check.php';
+require '../../config/config.php';
 
 $response = ['success' => false, 'message' => 'An unknown error occurred.'];
 

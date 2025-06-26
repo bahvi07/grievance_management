@@ -1,7 +1,7 @@
 <?php
-require_once '../config/session-config.php';
+require_once '../../config/session-config.php';
 startSecureSession();
-include '../config/config.php';
+include '../../config/config.php';
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'message' => ''];

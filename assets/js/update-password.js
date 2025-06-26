@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('changePasswordForm');
                 const csrfToken = form.querySelector('input[name="csrf_token"]').value;
                 
-                const response = await fetch('../otp/send-code.php', {
+                const response = await fetch('/grievance_management/otp/send-code.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             try{
-                const res=await fetch('../otp/verify-code.php',{
+                const res=await fetch('/grievance_management/otp/verify-code.php',{
                     method:'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 <?php
-require_once '../config/session-config.php';
+require_once __DIR__ . '/../config/session-config.php';
 startSecureSession();
-require_once '../config/config.php';
+require_once __DIR__ . '/../config/config.php';
 
 error_log("=== Admin Auth Check Started ===", 3, LOG_FILE);
 error_log("Session ID: " . session_id(), 3, LOG_FILE);

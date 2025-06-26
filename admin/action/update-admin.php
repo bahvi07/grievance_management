@@ -1,6 +1,6 @@
 <?php
-require '../config/config.php';
-include '../auth/admin-auth-check.php';
+require '../../config/config.php';
+include '../../auth/admin-auth-check.php';
 
 header('Content-Type: application/json');
 

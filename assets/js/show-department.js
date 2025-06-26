@@ -77,7 +77,7 @@ $('#area').on('input', function () {
                     }
                 });
 
-                fetch('../admin/delete_department.php', {
+                fetch('../admin/action/delete_department.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ updateBtn.addEventListener('click', async (e) => {
     '<span class="spinner-border spinner-border-sm"></span> Updating...';
 
   try {
-    const response = await fetch('../admin/updatedept.php', {
+    const response = await fetch('../admin/action/updatedept.php', {
       method: 'POST',
       body: formData
     });
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
         '<span class="spinner-border spinner-border-sm"></span> Submitting...';
 
       try {
-        const response = await fetch('../admin/addDept.php', {
+        const response = await fetch('../admin/action/addDept.php', {
           method: "POST",
           body: formData
         });

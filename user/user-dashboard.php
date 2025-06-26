@@ -26,7 +26,7 @@ include_once '../auth/auth-check.php';
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul class="nav flex-column">
-      <li><a class="nav-link" href="dashboard.php"><i class="fas fa-home"></i> Home</a></li>
+      <li><a class="nav-link" href="./user-dashboard.php"><i class="fas fa-home"></i> Home</a></li>
       <li><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#complaintModal"><i class="fas fa-plus-circle"></i> Create Complaint</a></li>
       <li><a class="nav-link" href="./myComplaints.php"><i class="fas fa-list-alt"></i> My Complaints</a></li>
       <li><a class="nav-link" href="#" data-bs-target="#checkStatus" data-bs-toggle="modal"><i class="fas fa-tasks"></i> Check Status</a></li>
@@ -322,7 +322,7 @@ Feedback</a></li>
       delBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Deleting...`;
 
       try {
-        const response = await fetch('./delete-account.php', {
+        const response = await fetch('./action/delete-account.php', {
           method: 'POST',
           body: formData,
         });

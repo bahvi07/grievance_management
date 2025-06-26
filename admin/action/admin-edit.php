@@ -1,7 +1,7 @@
 <?php
-include '../includes/admin-init.php';
-include '../includes/admin-header.php';
-include '../includes/admin-nav.php';
+include '../../includes/admin-init.php';
+include '../../includes/admin-header.php';
+include '../../includes/admin-nav.php';
 ?>
 </head>
 
@@ -145,4 +145,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php include '../includes/admin-footer.php'; ?>
+<?php include '../../includes/admin-footer.php'; ?>

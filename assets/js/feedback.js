@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Use FormData to include all form fields including CSRF token
         const formData = new FormData(feedbackForm);
         
-        const response = await fetch('submit-feedback.php', {
+        const response = await fetch('action/submit-feedback.php', {
           method: 'POST',
           body: formData
         });

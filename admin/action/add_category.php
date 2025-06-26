@@ -1,8 +1,8 @@
 <?php
-require_once '../config/session-config.php';
+require_once '../../config/session-config.php';
 startSecureSession();
 ob_start(); // Buffer output to prevent accidental whitespace/errors
-require_once '../config/config.php';
+require_once '../../config/config.php';
 header('Content-Type: application/json');
 error_reporting(0);
 $response = ['success' => false, 'message' => ''];

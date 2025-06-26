@@ -1,9 +1,9 @@
 <?php
-require_once '../config/session-config.php';
+require_once '../../config/session-config.php';
 startSecureSession();
 
-require_once '../config/config.php';
-include '../auth/admin-auth-check.php';
+require_once '../../config/config.php';
+include '../../auth/admin-auth-check.php';
 
 // Verify CSRF token
 if (!CSRFProtection::verifyPostToken()) {

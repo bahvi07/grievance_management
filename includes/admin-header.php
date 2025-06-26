@@ -27,7 +27,7 @@
 
   <!-- Datatables -->
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/datatables/datatables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+  <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/datatables/DataTables-1.13.8/css/responsive.bootstrap5.min.css">
 
   <!-- Custom Admin CSS -->
   <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/admin-dashboard.css">

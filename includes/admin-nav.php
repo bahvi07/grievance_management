@@ -110,7 +110,7 @@ $stmt->close();
       </a>
     </li>
       <li class="nav-item">
-      <a class="nav-link <?= ($currentPage == 'admin-edit.php') ? 'active' : '' ?>" href="./admin-edit.php">
+      <a class="nav-link <?= ($currentPage == 'admin-edit.php' || $currentPage == 'admin-edit') ? 'active' : '' ?>" href="./action/admin-edit.php">
         <i class="fas fa-gear"></i> Setting
       </a>
     </li>

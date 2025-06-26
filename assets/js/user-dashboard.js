@@ -147,7 +147,7 @@ if (updateBtn) {
     updateBtn.innerText = 'Updating...';
 
     try {
-      const response = await fetch('edit-phone.php', {
+      const response = await fetch('action/edit-phone.php', {
         method: 'POST',
         body: formData,
       });

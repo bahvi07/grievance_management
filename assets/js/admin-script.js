@@ -60,7 +60,7 @@ $('#search_area').on('input', function() {
     }
 
     $.ajax({
-        url: './searchDepartement.php',
+        url: './action/searchDepartement.php',
         method: 'POST',
         data: {
             area,

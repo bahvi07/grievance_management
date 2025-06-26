@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('csrf_token', csrfTokenMeta.getAttribute('content'));
             }
             try {
-                const response = await fetch('add_category.php', {
+                const response = await fetch('action/add_category.php', {
                     method: 'POST',
                     body: formData
                 });
