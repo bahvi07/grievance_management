@@ -35,7 +35,9 @@ include '../includes/admin-nav.php';
       <div class="col-md-6 d-flex align-items-end">
         <div class="ms-2">
           <label class="form-label d-block invisible">Add</label> <!-- Spacer label -->
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#categoryModal">Add Category</button>
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#categoryModal">
+            <i class="fas fa-plus me-2"></i>Add Category
+          </button>
         </div>
       </div>
     </div>
@@ -122,7 +124,7 @@ include '../includes/admin-nav.php';
             </div>
             <div class="mb-3">
               <label for="categoryStatus" class="form-label">Status</label>
-              <select class="form-select" id="categoryStatus" name="status" required>
+              <select class="form-select " id="categoryStatus" name="status" required>
                 <option value="1" selected>Active</option>
                 <option value="0">Inactive</option>
               </select>
@@ -155,7 +157,7 @@ include '../includes/admin-nav.php';
             </div>
             <div class="mb-3">
               <label for="editCategoryStatus" class="form-label">Status</label>
-              <select class="form-select" id="editCategoryStatus" name="status" required>
+              <select class="form-select " id="editCategoryStatus" name="status" required>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
               </select>

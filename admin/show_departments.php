@@ -36,11 +36,17 @@ include '../includes/admin-nav.php';
             <label for="category" class="form-label">Category</label>
             <select class="form-select" id="category">
                 <option value="">All</option>
-                <option>Electricity</option>
-                <option>Water</option>
-                <option>Road</option>
-                <option>Land</option>
-                  <option>Sanitation</option>
+                <?php
+                // Fetch active categories from database
+                $categoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
+                $categoryStmt->execute();
+                $categoryResult = $categoryStmt->get_result();
+                
+                while ($category = $categoryResult->fetch_assoc()) {
+                    echo '<option value="' . htmlspecialchars($category['name']) . '">' . htmlspecialchars($category['name']) . '</option>';
+                }
+                $categoryStmt->close();
+                ?>
             </select>
         </div>
 
@@ -240,12 +246,17 @@ while($row = $result->fetch_assoc()){
             <label for="deptCategory" class="form-label">Category</label>
             <select class="form-select" id="edit_category" name="category">
               <option value="">-- Select Category --</option>
-              <option value="Electricity">Electricity</option>
-              <option value="Water">Water</option>
-              <option value="Road">Road</option>
-              <option value="Land">Land</option>
-              <option value="Sanitation">Sanitation</option>
-              <option value="Other">Other</option>
+              <?php
+              // Fetch active categories from database
+              $editCategoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
+              $editCategoryStmt->execute();
+              $editCategoryResult = $editCategoryStmt->get_result();
+              
+              while ($editCategory = $editCategoryResult->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($editCategory['name']) . '">' . htmlspecialchars($editCategory['name']) . '</option>';
+              }
+              $editCategoryStmt->close();
+              ?>
             </select>
           </div>
 
@@ -296,12 +307,17 @@ while($row = $result->fetch_assoc()){
             <label for="departmentCategory" class="form-label">Select Category</label>
             <select class="form-select" id="departmentCategory" name="category" required>
               <option value="">-- Choose Category --</option>
-              <option value="Electricity">Electricity</option>
-              <option value="Water">Water</option>
-              <option value="Road">Road</option>
-              <option value="Land">Land</option>
-              <option value="Sanitation">Sanitation</option>
-              <option value="Other">Other</option>
+              <?php
+              // Fetch active categories from database
+              $addCategoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
+              $addCategoryStmt->execute();
+              $addCategoryResult = $addCategoryStmt->get_result();
+              
+              while ($addCategory = $addCategoryResult->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($addCategory['name']) . '">' . htmlspecialchars($addCategory['name']) . '</option>';
+              }
+              $addCategoryStmt->close();
+              ?>
             </select>
           </div>
         </div>
@@ -328,12 +344,17 @@ while($row = $result->fetch_assoc()){
             <label for="deptCategory" class="form-label">Category</label>
             <select class="form-select" id="deptCategory" name="category">
               <option value="">-- Select Category --</option>
-              <option value="Electricity">Electricity</option>
-              <option value="Water">Water</option>
-              <option value="Road">Road</option>
-              <option value="Land">Land</option>
-              <option value="Sanitation">Sanitation</option>
-              <option value="Other">Other</option>
+              <?php
+              // Fetch active categories from database
+              $deptCategoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
+              $deptCategoryStmt->execute();
+              $deptCategoryResult = $deptCategoryStmt->get_result();
+              
+              while ($deptCategory = $deptCategoryResult->fetch_assoc()) {
+                  echo '<option value="' . htmlspecialchars($deptCategory['name']) . '">' . htmlspecialchars($deptCategory['name']) . '</option>';
+              }
+              $deptCategoryStmt->close();
+              ?>
             </select>
           </div>
 

@@ -43,6 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Populate Edit Category Modal
+    document.querySelectorAll('.edit-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const category = this.getAttribute('data-category');
+            const status = this.getAttribute('data-status');
+            
+            document.getElementById('editCategoryId').value = id;
+            document.getElementById('editCategoryName').value = category;
+            document.getElementById('editCategoryStatus').value = status;
+        });
+    });
+
     // Edit Category AJAX
     const editForm = document.getElementById('editCategoryForm');
     if (editForm) {
@@ -54,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('csrf_token', csrfTokenMeta.getAttribute('content'));
             }
             try {
-                const response = await fetch('edit_category.php', { // <-- You need to create this PHP endpoint
+                const response = await fetch('action/edit_category.php', {
                     method: 'POST',
                     body: formData
                 });

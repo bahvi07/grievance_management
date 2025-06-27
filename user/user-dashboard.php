@@ -144,12 +144,17 @@ Feedback</a></li>
               <label for="complain" class="form-label">Complaint Category:</label>
               <select class="form-select text-center" id="complain" name="category" required>
                 <option value="">-- Select Option --</option>
-                <option value="Water">Water Related</option>
-                <option value="Electricity">Electricity Related</option>
-                <option value="Land">Land Related</option>
-                  <option value="Sanitation">Sanitation</option>
-                  <option value="Road">Road</option>
-                <option value="Other">Other</option>
+                <?php
+                // Fetch active categories from database
+                $categoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
+                $categoryStmt->execute();
+                $categoryResult = $categoryStmt->get_result();
+                
+                while ($category = $categoryResult->fetch_assoc()) {
+                    echo '<option value="' . htmlspecialchars($category['name']) . '">' . htmlspecialchars($category['name']) . '</option>';
+                }
+                $categoryStmt->close();
+                ?>
               </select>
             </div>
 
