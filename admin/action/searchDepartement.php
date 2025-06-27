@@ -67,6 +67,26 @@ if ($result->num_rows > 0) {
             <input type='hidden' name='location' value='" . htmlspecialchars($complaintData['location'] ?? '') . "'>
             <input type='hidden' name='description' value='" . htmlspecialchars($complaintData['complaint'] ?? '') . "'>
             <input type='hidden' name='image' value='" . htmlspecialchars(basename($complaintData['image'] ?? '')) . "'>
+            <!-- Priority Radio Buttons -->
+            <div class='mb-2'>
+                <label class='form-label mb-1'><b>Priority:</b></label><br>
+                <div class='form-check form-check-inline'>
+                    <input class='form-check-input' type='radio' name='priority' id='priority_low_{$row['id']}_{$refid}' value='low'>
+                    <label class='form-check-label' for='priority_low_{$row['id']}_{$refid}'>Low</label>
+                </div>
+                <div class='form-check form-check-inline'>
+                    <input class='form-check-input' type='radio' name='priority' id='priority_medium_{$row['id']}_{$refid}' value='medium' checked>
+                    <label class='form-check-label' for='priority_medium_{$row['id']}_{$refid}'>Medium</label>
+                </div>
+                <div class='form-check form-check-inline'>
+                    <input class='form-check-input' type='radio' name='priority' id='priority_high_{$row['id']}_{$refid}' value='high'>
+                    <label class='form-check-label' for='priority_high_{$row['id']}_{$refid}'>High</label>
+                </div>
+                <div class='form-check form-check-inline'>
+                    <input class='form-check-input' type='radio' name='priority' id='priority_urgent_{$row['id']}_{$refid}' value='urgent'>
+                    <label class='form-check-label' for='priority_urgent_{$row['id']}_{$refid}'>Urgent</label>
+                </div>
+            </div>
             <button type='submit' class='btn btn-sm btn-success mt-2'>Forward</button>
           </form>
         </div>";

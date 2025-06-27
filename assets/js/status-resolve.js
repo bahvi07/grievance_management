@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(form);
 
       try {
-        const response = await fetch('../admin/update-status.php', {
+        const response = await fetch('../admin/action/update-status.php', {
           method: "POST",
           body: formData
         });

@@ -6,7 +6,7 @@ include '../../config/config.php';
 $allowedTypes = ['complaints', 'resolved', 'pending', 'rejected', 'forwarded', 'departments','forwarded_complaints'];
 $type = $_GET['type'] ?? $_POST['type'] ?? 'complaints';
 $filter = $_GET['filter'] ?? $_POST['complaint_status'] ?? 'all';
-$tp=$_POST['complaint_status'];
+$tp = $_POST['complaint_status'] ?? $_GET['complaint_status'] ?? '';
 if (!in_array($type, $allowedTypes)) {
     die('Invalid type parameter.');
 }
@@ -18,7 +18,8 @@ header('Content-Type: text/csv');
 
 $output = fopen('php://output', 'w');
 
-if ($tp === 'departments') {
+if ($type === 'departments'||$tp==='departments') {
+    error_log('DEBUG: Downloading departments. Filter: ' . $filter);
     header('Content-Disposition: attachment; filename="departments_' . date('Y-m-d_H-i-s') . '.csv"');
 
     // Write headers
@@ -35,12 +36,15 @@ if ($tp === 'departments') {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result && $result->num_rows > 0) {
+        error_log('DEBUG: Found ' . $result->num_rows . ' department rows.');
         while ($row = $result->fetch_assoc()) {
             fputcsv($output, [
                 $id++, $row['name'] ?? 'N/A', $row['category'] ?? 'N/A', $row['email'] ?? 'N/A',
                 $row['phone'] ?? 'N/A', $row['area'] ?? 'N/A', $row['created_at'] ?? '', $row['updated_at'] ?? ''
             ]);
         }
+    } else {
+        error_log('DEBUG: No department data found for filter: ' . $filter);
     }
     $stmt->close();
 

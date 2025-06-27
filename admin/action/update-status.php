@@ -1,6 +1,6 @@
 <?php
 require '../../config/config.php';
-include '../auth/admin-auth-check.php';
+include '../../auth/admin-auth-check.php';
 header('Content-Type: application/json');
 
 $response = ['success' => false, 'message' => ''];

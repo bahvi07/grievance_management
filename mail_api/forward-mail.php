@@ -24,7 +24,8 @@ $mail_encryption = $_ENV['MAIL_ENCRYPTION'];
 $mail_from_address = $_ENV['MAIL_FROM_ADDRESS'];
 $mail_from_name = $_ENV['MAIL_FROM_NAME'];
 
-function sendJsonResponse($success, $message, $data = []) {
+function sendJsonResponse($success, $message, $data = [])
+{
     echo json_encode(['success' => $success, 'message' => $message, 'data' => $data]);
     exit;
 }
@@ -34,19 +35,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!CSRFProtection::verifyPostToken()) {
         sendJsonResponse(false, 'Security validation failed. Please refresh the page and try again.');
     }
+    $refid = $_POST['refid'] ?? '';
     $dept_id = $_POST['dept_id'] ?? '';
     $to = $_POST['dept_email'] ?? '';
-    $dept_name=$_POST['dept_name']??'';
-    $dept_category=$_POST['dept_category']??'';
-    $dept_area=$_POST['dept_area']??'';
-    $dept_phone=$_POST['dept_phone']??'';
-    $refid = $_POST['refid'] ?? '';
-    $name = $_POST['name'] ?? 'Unknown';
-    $phone = $_POST['phone'] ?? '';
-    $location = $_POST['location'] ?? '';
-    $description = $_POST['description'] ?? '';
+    $dept_name = $_POST['dept_name'] ?? '';
+    $dept_category = $_POST['dept_category'] ?? '';
+    $dept_area = $_POST['dept_area'] ?? '';
+    $dept_phone = $_POST['dept_phone'] ?? '';
+    $priority = $_POST['priority'] ?? 'medium'; // Default to medium if not set
+
+    // User & Complaint Details
+    $name = $_POST['name'] ?? 'N/A';
+    $user_email = $_POST['email'] ?? 'N/A';
+    $phone = $_POST['phone'] ?? 'N/A';
+    $location = $_POST['location'] ?? 'N/A';
+    $description = $_POST['description'] ?? 'No description provided.';
     $image = $_POST['image'] ?? '';
-    $user_email = $_POST['email'] ?? '';
+    $admin_name = $_SESSION['admin_name'] ?? 'Admin'; // Get admin name for logging
+
+    // Validate required fields
+    if (empty($refid) || empty($to) || empty($dept_id) || empty($priority)) {
+        sendJsonResponse(false, 'Missing required data.');
+        exit;
+    }
+
+    // Map priority to resolution timeframe
+    $timeframe = '';
+    switch ($priority) {
+        case 'urgent':
+            $timeframe = 'Within 2 days';
+            break;
+        case 'high':
+            $timeframe = 'Within 5 days';
+            break;
+        case 'medium':
+            $timeframe = 'Within 7 days';
+            break;
+        case 'low':
+            $timeframe = 'Within 10 days';
+            break;
+        default:
+            $timeframe = 'As soon as possible';
+    }
 
     // Validate department email
     $to = filter_var(trim($to), FILTER_SANITIZE_EMAIL);
@@ -68,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($dept_phone) && strlen($dept_phone) !== 10) {
         sendJsonResponse(false, 'Invalid phone number. It must be 10 digits.');
     }
-    
+
 
     // Validate name (letters, spaces, 2-50 chars)
     $name = trim($name);
@@ -80,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strlen($dept_name) < 2 || strlen($dept_name) > 50 || !preg_match('/^[a-zA-Z\s]+$/', $dept_name)) {
         sendJsonResponse(false, 'Name must be 2-50 letters and spaces only.');
     }
-    
+
 
     // Validate location (length)
     $location = trim($location);
@@ -93,24 +123,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sendJsonResponse(false, 'Location must be 2-100 characters.');
     }
     // Validate Dept Category
-    $dept_category=trim($dept_category);
-    if(empty($dept_category)){
-        sendJsonResponse(false,'Category Must be Selected');
+    $dept_category = trim($dept_category);
+    if (empty($dept_category)) {
+        sendJsonResponse(false, 'Category Must be Selected');
     }
 
     // Validate description (length)
     $description = trim($description);
-    if (strlen($description) <=2 || strlen($description) > 1000) {
+    if (strlen($description) <= 2 || strlen($description) > 1000) {
         sendJsonResponse(false, 'Description must be 5-1000 characters.');
     }
 
     if (empty($to) || empty($refid)) {
         sendJsonResponse(false, 'Email or Reference ID is missing!');
     }
-// Validate Dept id
-if(empty($dept_id)){
-    sendJsonResponse(false,'Department id is missing!');
-}
+    // Validate Dept id
+    if (empty($dept_id)) {
+        sendJsonResponse(false, 'Department id is missing!');
+    }
     try {
         $mail = new PHPMailer(true);
 
@@ -122,7 +152,7 @@ if(empty($dept_id)){
         } else {
             $logoSrc = ''; // Fallback if logo not found
         }
-        
+
         $mail->isSMTP();
         $mail->Host = $mail_host;
         $mail->SMTPAuth = true;
@@ -137,7 +167,7 @@ if(empty($dept_id)){
         $mail->isHTML(true);
         $subject = "Complaint Forwarded (Ref ID: $refid)";
         $mail->Subject = $subject;
-        
+
         // Update email body to use the embedded logo CID
         $message = '
         <div style="font-family: Arial, sans-serif; background: #fff6f2; padding: 24px; border-radius: 12px; max-width: 480px; margin: auto; border: 1px solid #ffd6c1;">
@@ -152,6 +182,8 @@ if(empty($dept_id)){
             <tr><td><b>Email:</b></td><td>' . htmlspecialchars($user_email) . '</td></tr>
             <tr><td><b>Phone:</b></td><td>' . htmlspecialchars($phone) . '</td></tr>
             <tr><td><b>Location:</b></td><td>' . htmlspecialchars($location) . '</td></tr>
+            <tr><td style="padding-top:10px;"><b>Priority:</b></td><td style="padding-top:10px;"><b>' . ucfirst($priority) . '</b></td></tr>
+            <tr><td><b>Resolution Timeframe:</b></td><td><b>' . $timeframe . '</b></td></tr>
           </table>
           <div style="background: #fff; border: 2px dashed #f15a29; border-radius: 8px; padding: 18px; margin: 18px 0;">
             <b>Complaint Description:</b>
@@ -171,7 +203,7 @@ if(empty($dept_id)){
             // Construct the correct path to the complaint image
             $basePath = realpath(__DIR__ . '/..');
             $imagePath = $basePath . '/assets/images/complain_upload/' . basename($image);
-            
+
             if (file_exists($imagePath)) {
                 $mail->addAttachment($imagePath, 'complaint_image.jpg');
             } else {
@@ -179,33 +211,33 @@ if(empty($dept_id)){
                 error_log("Complaint image not found: $imagePath", 3, '../logs/error.log');
             }
         }
-        
-        $mail->send();
-        
-        // If mail is sent, update the status
-        updateStatus($refid, $conn);
-updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description);
-        sendJsonResponse(true, 'Complaint forwarded successfully!');
 
+        $mail->send();
+
+        // If mail is sent, update the status and priority
+        updateStatusAndPriority($refid, $priority, $admin_name, $conn);
+        updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description, $priority, $admin_name);
+
+        sendJsonResponse(true, 'Complaint forwarded successfully!');
     } catch (Exception $e) {
-        error_log('Mail sending failed: ' . $e->getMessage(), 3, '../logs/error.log'); 
+        error_log('Mail sending failed: ' . $e->getMessage(), 3, '../logs/error.log');
         sendJsonResponse(false, 'Email could not be sent. Please check server logs.');
     }
 } else {
     sendJsonResponse(false, 'Invalid request method.');
 }
 
-function updateStatus($ref, $conn) {
+function updateStatusAndPriority($ref, $priority, $admin_name, $conn) {
     if ($conn) {
-        $stmt = $conn->prepare("UPDATE complaints SET status = 'forward', response = ? WHERE refid = ?");
-        $response = "Your complaint is forwarded to department to take action quickly";
-        $stmt->bind_param("ss", $response, $ref);
+        $stmt = $conn->prepare("UPDATE complaints SET status = 'forward', response = ?, priority = ?, priority_updated_at = CURRENT_TIMESTAMP, priority_updated_by = ? WHERE refid = ?");
+        $response = "Your complaint is forwarded to the concerned department to take action quickly.";
+        $stmt->bind_param("ssss", $response, $priority, $admin_name, $ref);
         $stmt->execute();
         $stmt->close();
     }
 }
 
-function updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description) {
+function updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description, $priority, $admin_name) {
     if ($conn) {
         // First, get the complaint's primary key `id` from the `refid`
         $complaint_pk_id = null;
@@ -224,13 +256,11 @@ function updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area
             return; // Stop execution
         }
 
-        $stmt = $conn->prepare("INSERT INTO complaint_forwarded(complaint_id, dept_id, complaint_ref_id, status, dept_name, dept_category, dept_area, complaint, user_name, user_location, dept_phone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO complaint_forwarded(complaint_id, dept_id, complaint_ref_id, status, priority, priority_updated_by, dept_name, dept_category, dept_area, complaint, user_name, user_location, dept_phone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $status = 'Forwarded';
         // Use the correct primary key for complaint_id and add the ref_id
-        $stmt->bind_param('iisssssssss', $complaint_pk_id, $dept_id, $refid, $status, $dept_name, $dept_category, $dept_area, $description, $name, $location, $dept_phone);
+        $stmt->bind_param('iisssssssssss', $complaint_pk_id, $dept_id, $refid, $status, $priority, $admin_name, $dept_name, $dept_category, $dept_area, $description, $name, $location, $dept_phone);
         $stmt->execute();
         $stmt->close();
     }
 }
-
-?>

@@ -158,9 +158,10 @@ while($row = $result->fetch_assoc()){
                     <th>Dept Name</th>
                     <th>Dept Category</th>
                     <th>Complaint</th>
-                    <th>User Name</th>
+                    <!-- <th>User Name</th> -->
                     <th>User Location</th>
                     <th>Forwarded At</th>
+                    <th>Priority</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -172,9 +173,9 @@ while($row = $result->fetch_assoc()){
                                 cf.dept_name,
                                 cf.dept_category,
                                 cf.complaint,
-                                cf.user_name,
                                 cf.user_location,
                                 cf.forwarded_at,
+                                cf.priority,
                                 cf.status
                             FROM 
                                 complaint_forwarded cf
@@ -189,6 +190,8 @@ while($row = $result->fetch_assoc()){
                     while ($row = $result->fetch_assoc()) {
                         $status = htmlspecialchars($row['status']);
                         $statusClass = '';
+                        $priority = htmlspecialchars($row['priority']);
+                        $priorityClass = '';
 
                         switch (strtolower($status)) {
                             case 'forwarded':
@@ -201,15 +204,33 @@ while($row = $result->fetch_assoc()){
                                 $statusClass = 'badge bg-secondary';
                         }
 
+                        // Priority badge color (match complaints.php)
+                        switch (strtolower($priority)) {
+                            case 'low':
+                                $priorityClass = 'priority-badge bg-low';
+                                break;
+                            case 'medium':
+                                $priorityClass = 'priority-badge bg-medium';
+                                break;
+                            case 'high':
+                                $priorityClass = 'priority-badge bg-high';
+                                break;
+                            case 'urgent':
+                                $priorityClass = 'priority-badge bg-urgent';
+                                break;
+                            default:
+                                $priorityClass = 'priority-badge bg-secondary';
+                        }
+
                         echo "<tr>
                                 <td>" . $count++ . "</td>
                                 <td>" . htmlspecialchars($row['complaint_ref_id']) . "</td>
                                 <td>" . htmlspecialchars($row['dept_name']) . "</td>
                                 <td>" . htmlspecialchars($row['dept_category']) . "</td>
                                 <td>" . htmlspecialchars($row['complaint']) . "</td>
-                                <td>" . htmlspecialchars($row['user_name']) . "</td>
                                 <td>" . htmlspecialchars($row['user_location']) . "</td>
                                 <td>" . htmlspecialchars($row['forwarded_at']) . "</td>
+                                <td><span class='" . $priorityClass . "'>" . ucfirst($priority) . "</span></td>
                                 <td><span class='" . $statusClass . "'>" . ucfirst($status) . "</span></td>
                               </tr>";
                     }
@@ -391,7 +412,7 @@ while($row = $result->fetch_assoc()){
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <form action="../admin/reports/excel.php" method="POST" target="_blank" id="downloadExcelForm">
+            <form action="../admin/reports/excel.php" method="POST" id="downloadExcelForm">
                 <div class="modal-header bg-dark text-white">
                     <h5 class="modal-title" id="downloadModalLabel">
                         <i class="fas fa-download me-2"></i>Download Complaints Data
@@ -466,6 +487,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+<style>
+    .priority-badge {
+        color: #fff !important;
+        border-radius: 0.25rem;
+        padding: 0.35em 0.65em;
+        font-size: .75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border: none;
+    }
+    .bg-low { background-color: #0dcaf0 !important; } /* Bootstrap info */
+    .bg-medium { background-color: #0d6efd !important; } /* Bootstrap primary */
+    .bg-high { background-color: #ffc107 !important; color: #000 !important; } /* Bootstrap warning */
+    .bg-urgent { background-color: #dc3545 !important; } /* Bootstrap danger */
+</style>
 
     <?php
     include '../includes/admin-footer.php';

@@ -18,6 +18,33 @@ include '../includes/admin-init.php';
 include '../includes/admin-header.php';
 include '../includes/admin-nav.php';
 ?>
+<style>
+    .priority-badge, .priority-select {
+        color: #fff !important;
+        border-radius: 0.25rem;
+        padding: 0.35em 0.65em;
+        font-size: .75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border: none;
+    }
+    .priority-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+    .bg-low { background-color: #0dcaf0 !important; } /* Bootstrap info */
+    .bg-medium { background-color: #0d6efd !important; } /* Bootstrap primary */
+    .bg-high { background-color: #ffc107 !important; color: #000 !important; } /* Bootstrap warning */
+    .bg-urgent { background-color: #dc3545 !important; } /* Bootstrap danger */
+</style>
 </head>
 
 <body class='custom-body'>
@@ -75,6 +102,7 @@ include '../includes/admin-nav.php';
                             <th>Details</th>
                             <th>Image</th>
                             <th>Date</th>
+                            <th>Priority</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -86,20 +114,20 @@ include '../includes/admin-nav.php';
                         $id = 1;
 
                         while ($row = $result->fetch_assoc()) {
+                            // Extract and sanitize data
                             $refId = htmlspecialchars($row['refid']);
-                            $name = htmlspecialchars($row['name'] ?? 'Unknown');
-                            $phone = htmlspecialchars($row['phone'] ?? '');
-                            $email = htmlspecialchars($row['email'] ?? '');
-                            $category = htmlspecialchars($row['category'] ?? '');
-                            $location = htmlspecialchars($row['location'] ?? '');
-                            $complaint = htmlspecialchars($row['complaint'] ?? '');
-                            $createdAt = htmlspecialchars($row['created_at'] ?? '');
-                            $image = htmlspecialchars($row['image'] ?? 'placeholder.jpg');
+                            $name = htmlspecialchars($row['name']);
+                            $phone = htmlspecialchars($row['phone']);
+                            $email = htmlspecialchars($row['email']);
+                            $category = htmlspecialchars($row['category']);
+                            $location = htmlspecialchars($row['location']);
+                            $complaint = htmlspecialchars($row['complaint']);
+                            $imagePath = !empty($row['image']) ? htmlspecialchars($row['image']) : '';
+                            $createdAt = htmlspecialchars(date('d-m-Y', strtotime($row['created_at'])));
+                            $priority = htmlspecialchars($row['priority'] ?? 'medium');
                             
-                            $imagePath = $image;
-                            if ($image && $image !== 'placeholder.jpg' && !str_starts_with($image, 'http')) {
-                                $imagePath = '../assets/images/complain_upload/' . basename($image);
-                            }
+                            // Map priority to a background color class
+                            $priorityClass = 'bg-' . strtolower($priority);
 
                             echo "<tr>
                                 <td>" . $id++ . "</td>
@@ -118,6 +146,7 @@ include '../includes/admin-nav.php';
                                     </button>
                                 </td>
                                 <td>$createdAt</td>
+                                <td><span class='priority-badge $priorityClass'>" . ucfirst($priority) . "</span></td>
                                 <td>
                                 <button 
                                     class='btn btn-success btn-sm forwardBtn text-white' 
@@ -159,6 +188,7 @@ include '../includes/admin-nav.php';
                             <th>Details</th>
                             <th>Image</th>
                             <th>Date</th>
+                            <th>Priority</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -170,41 +200,39 @@ include '../includes/admin-nav.php';
                         $id = 1;
 
                         while ($row = $result->fetch_assoc()) {
+                            // Extract and sanitize data
                             $refId = htmlspecialchars($row['refid']);
-                            $name = htmlspecialchars($row['name'] ?? 'Unknown');
-                            $phone = htmlspecialchars($row['phone'] ?? '');
-                            $email = htmlspecialchars($row['email'] ?? '');
-                            $category = htmlspecialchars($row['category'] ?? '');
-                            $location = htmlspecialchars($row['location'] ?? '');
-                            $complaint = htmlspecialchars($row['complaint'] ?? '');
-                            $createdAt = htmlspecialchars($row['created_at'] ?? '');
-                            $image = htmlspecialchars($row['image'] ?? 'placeholder.jpg'); // fallback
-                            
-                            // Fix image path for admin panel - use correct path from admin directory
-                            $imagePath = $image;
-                            if ($image && $image !== 'placeholder.jpg' && !str_starts_with($image, 'http')) {
-                                $imagePath = '../assets/images/complain_upload/' . basename($image);
-                            }
+                            $name = htmlspecialchars($row['name']);
+                            $phone = htmlspecialchars($row['phone']);
+                            $email = htmlspecialchars($row['email']);
+                            $category = htmlspecialchars($row['category']);
+                            $location = htmlspecialchars($row['location']);
+                            $complaint = htmlspecialchars($row['complaint']);
+                            $imagePath = !empty($row['image']) ? htmlspecialchars($row['image']) : '';
+                            $createdAt = htmlspecialchars(date('d-m-Y', strtotime($row['created_at'])));
+                            $priority = htmlspecialchars($row['priority'] ?? 'medium');
+                            $priorityClass = 'bg-' . strtolower($priority);
 
                             echo "<tr>
-        <td>" . $id++ . "</td>
-        <td>$refId</td>
-        <td>$name</td>
-        <td>$phone<br>$email</td>
-        <td>$category</td>
-        <td>$location</td>
-        <td>$complaint</td>
-        <td>
-            <button class='btn btn-warning btn-sm viewImageBtn text-white' 
-                data-bs-toggle='modal' 
-                data-bs-target='#showImageModal' 
-                data-image='$imagePath'>
-                <i class='fa fa-eye' aria-hidden='true'></i>
-            </button>
-        </td>
-        <td>$createdAt</td>
-  <td>
-           <button 
+                                <td>" . $id++ . "</td>
+                                <td>$refId</td>
+                                <td>$name</td>
+                                <td>$phone<br>$email</td>
+                                <td>$category</td>
+                                <td>$location</td>
+                                <td>$complaint</td>
+                                <td>
+                                    <button class='btn btn-warning btn-sm viewImageBtn text-white' 
+                                        data-bs-toggle='modal' 
+                                        data-bs-target='#showImageModal' 
+                                        data-image='$imagePath'>
+                                        <i class='fa fa-eye' aria-hidden='true'></i>
+                                    </button>
+                                </td>
+                                <td>$createdAt</td>
+                                <td><span class='priority-badge $priorityClass'>" . ucfirst($priority) . "</span></td>
+                                <td>
+                                <button 
     class='btn btn-success btn-sm forwardBtn text-white' 
     data-bs-toggle='modal' 
     data-bs-target='#forwardModal' 
@@ -231,7 +259,7 @@ include '../includes/admin-nav.php';
                 <table id="forwardedTable" class="table table-hover complaintTable table-borderless">
                     <thead class="table-dark">
                         <tr>
-                            <th>Sr No.</th>
+                            <!-- <th>Sr No.</th> -->
                             <th>Ref ID</th>
                             <th>Name</th>
                             <th>Contact</th>
@@ -240,6 +268,7 @@ include '../includes/admin-nav.php';
                             <th>Details</th>
                             <th>Image</th>
                             <th>Date</th>
+                            <th>Priority</th>
                             <th>Actions</th>    
                         </tr>
                     </thead>
@@ -252,46 +281,44 @@ include '../includes/admin-nav.php';
 
                         while ($row = $result->fetch_assoc()) {
                             $refId = htmlspecialchars($row['refid']);
-                            $name = htmlspecialchars($row['name'] ?? 'Unknown');
-                            $phone = htmlspecialchars($row['phone'] ?? '');
-                            $email = htmlspecialchars($row['email'] ?? '');
-                            $category = htmlspecialchars($row['category'] ?? '');
-                            $location = htmlspecialchars($row['location'] ?? '');
-                            $complaint = htmlspecialchars($row['complaint'] ?? '');
-                            $createdAt = htmlspecialchars($row['created_at'] ?? '');
-                            $image = htmlspecialchars($row['image'] ?? 'placeholder.jpg'); // fallback
-                            
-                            // Fix image path for admin panel - use correct path from admin directory
-                            $imagePath = $image;
-                            if ($image && $image !== 'placeholder.jpg' && !str_starts_with($image, 'http')) {
-                                $imagePath = '../assets/images/complain_upload/' . basename($image);
-                            }
+                            $name = htmlspecialchars($row['name']);
+                            $phone = htmlspecialchars($row['phone']);
+                            $email = htmlspecialchars($row['email']);
+                            $category = htmlspecialchars($row['category']);
+                            $location = htmlspecialchars($row['location']);
+                            $complaint = htmlspecialchars($row['complaint']);
+                            $imagePath = !empty($row['image']) ? htmlspecialchars($row['image']) : '';
+                            $createdAt = htmlspecialchars(date('d-m-Y', strtotime($row['created_at'])));
+                            $priority = htmlspecialchars($row['priority'] ?? 'medium');
+                            $priorityClass = 'bg-' . strtolower($priority);
+
 
                             echo "<tr>
-        <td>" . $id++ . "</td>
-        <td>$refId</td>
-        <td>$name</td>
-        <td>$phone<br>$email</td>
-        <td>$category</td>
-        <td>$location</td>
-        <td>$complaint</td>
-        <td>
-            <button class='btn btn-warning btn-sm viewImageBtn text-white' 
-                data-bs-toggle='modal' 
-                data-bs-target='#showImageModal' 
-                data-image='$imagePath'>
-                <i class='fa fa-eye' aria-hidden='true'></i>
-            </button>
-        </td>
-        <td>$createdAt</td>
-        <td>
-             <button 
+                               
+                                <td>$refId</td>
+                                <td>$name</td>
+                                <td>$phone<br>$email</td>
+                                <td>$category</td>
+                                <td>$location</td>
+                                <td>$complaint</td>
+                                <td>
+                                    <button class='btn btn-warning btn-sm viewImageBtn text-white' 
+                                        data-bs-toggle='modal' 
+                                        data-bs-target='#showImageModal' 
+                                        data-image='$imagePath'>
+                                        <i class='fa fa-eye' aria-hidden='true'></i>
+                                    </button>
+                                </td>
+                                <td>$createdAt</td>
+                                <td><span class='priority-badge $priorityClass'>" . ucfirst($priority) . "</span></td>
+                                <td>
+                                <button 
     class='btn btn-success btn-sm text-white resBt' 
     data-bs-toggle='modal' 
     data-bs-target='#resolveModal' 
     data-resid='{$refId}'
 >
-    Mark as Resolved
+    <i class='fa fa-envelope'></i>
 </button>
         </td>
     </tr>";
@@ -381,7 +408,7 @@ include '../includes/admin-nav.php';
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-            <form action="../admin/reports/excel.php" method="POST" target="_blank">
+            <form action="../admin/reports/excel.php" method="POST">
                 <!-- Hidden field to specify type -->
                 <input type="hidden" name="type" value="complaints">
 
@@ -421,5 +448,16 @@ include '../includes/admin-nav.php';
     include '../includes/admin-footer.php';
     ?>
     <script src="../assets/js/forward-complaint.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var showImageModal = document.getElementById('showImageModal');
+            showImageModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var imageUrl = button.getAttribute('data-image');
+                var modalImage = showImageModal.querySelector('#complaintImage');
+                modalImage.src = imageUrl;
+            });
+        });
+    </script>
 </body>
 </html>
