@@ -33,6 +33,7 @@ try {
     $name = trim($_POST['feed_u_name'] ?? '');
     $feedback = trim($_POST['feedback'] ?? '');
     $user_phone = trim($_POST['user_phone'] ?? '');
+    $rating = intval($_POST['rating'] ?? 5);
 
     // Validate required fields
     if ($name === '' || $feedback === '') {
@@ -66,10 +67,18 @@ try {
         ]);
         exit;
     }
+    // Validate rating
+    if ($rating < 1 || $rating > 5) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Rating must be between 1 and 5.'
+        ]);
+        exit;
+    }
 
     // Insert into database
-    $stmt = $conn->prepare("INSERT INTO feedback (user_name, user_phone, feedback) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $name, $user_phone, $feedback);
+    $stmt = $conn->prepare("INSERT INTO feedback (user_name, user_phone, feedback, rating) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sssi", $name, $user_phone, $feedback, $rating);
 
     if ($stmt->execute()) {
         echo json_encode([

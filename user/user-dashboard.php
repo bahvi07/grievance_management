@@ -10,6 +10,48 @@ require_once '../config/config.php';
 include_once '../includes/header.php';
 include_once '../auth/auth-check.php';
 ?>
+
+<style>
+  /* Star Rating Styles */
+  .rating-container {
+    margin: 15px 0;
+  }
+  
+  .stars {
+    display: inline-flex;
+    gap: 5px;
+  }
+  
+  .star {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .star:hover,
+  .star.active {
+    color: #ffc107;
+  }
+  
+  .star.filled {
+    color: #ffc107;
+  }
+  
+  .rating-text {
+    font-size: 0.9rem;
+  }
+  
+  /* Remove the problematic hover effect that was overriding click selection */
+  /* .stars:hover .star {
+    color: #ffc107;
+  }
+  
+  .stars .star:hover ~ .star {
+    color: #ddd;
+  } */
+</style>
+
 </head>
 
 <body>
@@ -286,6 +328,26 @@ Feedback</a></li>
           <div class="mb-3">
             <label for="name" class="form-label">Your Name</label>
             <input type="text" class="form-control" name="feed_u_name" require>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Rate Your Experience</label>
+            <div class="rating-container text-center">
+              <div class="stars">
+                <i class="fas fa-star star" data-rating="1"></i>
+                <i class="fas fa-star star" data-rating="2"></i>
+                <i class="fas fa-star star" data-rating="3"></i>
+                <i class="fas fa-star star" data-rating="4"></i>
+                <i class="fas fa-star star" data-rating="5"></i>
+              </div>
+              <div class="rating-text mt-2">
+                <small class="text-muted">Click on a star to rate</small>
+              </div>
+            </div>
+            <input type="hidden" name="rating" id="ratingInput" value="5">
+          </div>
+          
+          <div class="mb-3">
             <label for="feedbackText" class="form-label">Your Feedback</label>
             <textarea class="form-control" id="feedbackText" name="feedback" rows="4" maxlength="500" required></textarea>
           </div>

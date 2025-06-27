@@ -3,59 +3,24 @@ include '../includes/admin-init.php';
 include '../includes/admin-header.php';
 include '../includes/admin-nav.php';
 ?>
-</head>
 
-<body class='custom-body'>
-    <div class="top-head bg-light">
-        <div class="brand">
-            <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" alt="Logo">
-            Feedback Panel
-        </div>
-        <div class="">
-            Admin, <?= $_SESSION['admin_name'] ?? 'Admin' ?>
-        </div>
-    </div>
-    <div class="container " style=" margin-top: 100px;
-  margin-right: 0;
-  margin-left: 255px;
-  padding-bottom: 85px;">
-    
-        <div class="table-responsive feedback-table-container bg-light rounded shadow-sm p-3" style="width:90%;">
-            <table id="feedbackTable" class="table table-hover table-borderless feedback-table">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Sr No.</th>
-                        <th>User Name</th>
-                        <th>Phone</th>
-                        <th>Feedback</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $today = date('Y-m-d');
-                    $result = $conn->query("SELECT * FROM feedback WHERE DATE(created_at) = '$today' ORDER BY created_at DESC");
-                    $i = 1;
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
-                            <td>{$i}</td>
-                            <td>" . htmlspecialchars($row['user_name']) . "</td>
-                            <td class='phone-col'>" . htmlspecialchars($row['user_phone']) . "</td>
-                            <td class='feedback-col'>" . nl2br(htmlspecialchars($row['feedback'])) . "</td>
-                            <td>" . date('d M Y, h:i A', strtotime($row['created_at'])) . "</td>
-                        </tr>";
-                        $i++;
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <?php
-    include '../includes/admin-footer.php';
-    ?>
 <style>
-/* Fix DataTables pagination styling */
+/* Star Rating Display Styles */
+.star-rating {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.star-rating .star {
+    font-size: 1.2rem;
+    color: #ddd;
+}
+
+.star-rating .star.filled {
+    color: #ffc107;
+}
+
+/* DataTables Styling */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 0.375rem 0.75rem;
     margin-left: 2px;
@@ -96,10 +61,76 @@ include '../includes/admin-nav.php';
     padding-top: 0.5rem;
 }
 </style>
+
+</head>
+
+<body class='custom-body'>
+    <div class="top-head bg-light">
+        <div class="brand">
+            <img src="<?php echo BASE_URL; ?>assets/images/general_images/Bjplogo.jpg" alt="Logo">
+            Feedback Panel (Last 7 Days)
+        </div>
+        <div class="">
+            Admin, <?= $_SESSION['admin_name'] ?? 'Admin' ?>
+        </div>
+    </div>
+    
+    <div class="container" style="margin-top: 100px; margin-right: 0; margin-left: 255px; padding-bottom: 85px;">
+        
+        <div class="table-responsive p-3" style="width:90%;">
+            <table id="feedbackTable" class="table table-hover table-borderless feedback-table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sr No.</th>
+                        <th>User Name</th>
+                        <th>Phone</th>
+                        <th>Rating</th>
+                        <th>Feedback</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Show only last 7 days of feedback
+                    $result = $conn->query("SELECT * FROM feedback WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY created_at DESC");
+                    $i = 1;
+                    while ($row = $result->fetch_assoc()) {
+                        // Generate star rating HTML
+                        $rating = $row['rating'] ?? 5;
+                        $starsHtml = '';
+                        for ($star = 1; $star <= 5; $star++) {
+                            $starClass = $star <= $rating ? 'filled' : '';
+                            $starsHtml .= "<i class='fas fa-star star $starClass'></i>";
+                        }
+                        
+                        echo "<tr>
+                            <td>{$i}</td>
+                            <td>" . htmlspecialchars($row['user_name']) . "</td>
+                            <td class='phone-col'>" . htmlspecialchars($row['user_phone']) . "</td>
+                            <td>
+                                <div class='star-rating' title='Rating: $rating/5'>
+                                    $starsHtml
+                                </div>
+                            </td>
+                            <td class='feedback-col'>" . nl2br(htmlspecialchars($row['feedback'])) . "</td>
+                            <td>" . date('d M Y, h:i A', strtotime($row['created_at'])) . "</td>
+                        </tr>";
+                        $i++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <?php
+    include '../includes/admin-footer.php';
+    ?>
+    
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     $('#feedbackTable').DataTable({
-        "order": [[ 4, "desc" ]], // Fixed: 4 is the last column (Date)
+        "order": [[ 5, "desc" ]], // Date column (6th column)
         "pageLength": 10,
         "language": {
             "search": "Search:",

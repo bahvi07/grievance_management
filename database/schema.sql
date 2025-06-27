@@ -106,6 +106,7 @@
         user_name VARCHAR(100) NOT NULL,
         user_phone VARCHAR(20),
         feedback TEXT NOT NULL,
+        rating INT NOT NULL DEFAULT 5 CHECK (rating >= 1 AND rating <= 5),
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
