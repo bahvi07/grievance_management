@@ -36,7 +36,6 @@
 <script src="<?php echo BASE_URL; ?>assets/js/status-resolve.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/excel.js"></script>
 <script src="<?php echo BASE_URL; ?>assets/js/update-password.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/add_category.js"></script>
 </body>
 
 </html>

@@ -7,6 +7,53 @@ require_once '../config/session-config.php';
 startSecureSession();
 require_once '../config/config.php';
 
+// Check if admin is already logged in and redirect to dashboard
+if (isset($_SESSION['admin_id']) && isset($_SESSION['admin_name']) && isset($_SESSION['admin_email'])) {
+    // Admin is already logged in, redirect to dashboard
+    header("Location: ../admin/admin-dashboard.php");
+    exit();
+}
+
+// If not logged in via session, check for remember me token
+if (isset($_COOKIE['admin_token']) && strpos($_COOKIE['admin_token'], ':') !== false) {
+    list($selector, $validator) = explode(':', $_COOKIE['admin_token'], 2);
+    
+    if (!empty($selector) && !empty($validator)) {
+        $sql = "SELECT * FROM admin_auth_tokens WHERE selector = ? AND expires_at >= NOW()";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $selector);
+        $stmt->execute();
+        $token_data = $stmt->get_result()->fetch_assoc();
+        
+        if ($token_data && hash_equals($token_data['validator_hash'], hash('sha256', $validator))) {
+            // Token is valid, log the user in
+            $admin_id = $token_data['admin_id'];
+            
+            $admin_stmt = $conn->prepare("SELECT * FROM admin WHERE admin_id = ?");
+            $admin_stmt->bind_param("s", $admin_id);
+            $admin_stmt->execute();
+            $admin = $admin_stmt->get_result()->fetch_assoc();
+            
+            if ($admin) {
+                // Set session data
+                $_SESSION['admin_id'] = $admin['admin_id'];
+                $_SESSION['admin_name'] = $admin['name'];
+                $_SESSION['admin_email'] = $admin['email'];
+                $_SESSION['last_activity'] = time();
+                
+                // Update last used time on the token
+                $update_stmt = $conn->prepare("UPDATE admin_auth_tokens SET last_used_at = NOW() WHERE id = ?");
+                $update_stmt->bind_param("i", $token_data['id']);
+                $update_stmt->execute();
+                
+                // Redirect to dashboard
+                header("Location: ../admin/admin-dashboard.php");
+                exit();
+            }
+        }
+    }
+}
+
 $errorMsg = '';
 
 // Get IP of User
@@ -126,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                                         user_agent = ?
                                         WHERE admin_id = ? AND ip_address = ?");
                                     $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                                    $stmt->bind_param("isssss", $newAttemptCount, $lockExpiry, $userAgent, $id, $ipAddress);
+                                    $stmt->bind_param("issss", $newAttemptCount, $lockExpiry, $userAgent, $id, $ipAddress);
                                     $errorMsg = "Account locked due to multiple failed attempts. Please try again in 30 minutes.";
                                 } else {
                                     // Just update attempt count
@@ -136,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                                         user_agent = ?
                                         WHERE admin_id = ? AND ip_address = ?");
                                     $userAgent = $_SERVER['HTTP_USER_AGENT'];
-                                    $stmt->bind_param("issss", $newAttemptCount, $userAgent, $id, $ipAddress);
+                                    $stmt->bind_param("isss", $newAttemptCount, $userAgent, $id, $ipAddress);
                                     $errorMsg = "Invalid admin ID or password.";
                                 }
                             } else {
@@ -246,7 +293,7 @@ include '../includes/admin-header.php';
         </div>
 
         <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+          <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" checked>
           <label class="form-check-label" for="remember_me">Remember Me</label>
         </div>
 

@@ -41,8 +41,8 @@ function startSecureSession() {
     }
     
     ini_set('session.use_only_cookies', 1);//Disables session ID in URLs. Only allows session via cookies.
-    ini_set('session.cookie_lifetime', 0); // Session cookie expires when browser closes
-    ini_set('session.gc_maxlifetime', 1800); // 30 minutes
+    ini_set('session.cookie_lifetime', 86400); // Session cookie expires in 24 hours instead of when browser closes
+    ini_set('session.gc_maxlifetime', 86400); // 24 hours instead of 30 minutes
 
     // Set secure session name
     session_name('SECURE_SESSION');
@@ -84,7 +84,7 @@ function validateSession() {
         $_SESSION['last_activity'] = time();
     }
     
-    $timeout = 1800; // 30 minutes
+    $timeout = 86400; // 24 hours instead of 30 minutes
     
     if (time() - $_SESSION['last_activity'] > $timeout) {
         session_unset();

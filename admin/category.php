@@ -172,11 +172,12 @@ include '../includes/admin-nav.php';
     </div>
   </div>
 
-
-
   <?php
   include '../includes/admin-footer.php';
   ?>
+  
+  <!-- Category Management JavaScript -->
+  <script src="<?php echo BASE_URL; ?>assets/js/category.js"></script>
 
 </body>
 
