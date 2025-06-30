@@ -5,12 +5,6 @@ require_once '../../config/config.php';
 header('Content-Type: application/json');
 
 $response = [];
-
-// Debug information
-// error_log("Delete account request received");
-// error_log("POST data: " . print_r($_POST, true));
-// error_log("Session data: " . print_r($_SESSION, true));
-
 // Verify CSRF token
 if (!CSRFProtection::verifyPostToken()) {
     error_log("CSRF validation failed");
@@ -159,6 +153,5 @@ try {
 }
 
 $conn->close();
-
 echo json_encode($response);
 ?>

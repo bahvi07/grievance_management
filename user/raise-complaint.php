@@ -74,15 +74,12 @@ try {
                 $errorMsg['img'] = "Failed to upload the image.";
             }
         }
-        // Security: Place an .htaccess file in the upload directory to prevent script execution
-        // Contents: "php_flag engine off\nRemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps"
     }
 
     if (!empty($errorMsg)) {
         $response['errors'] = $errorMsg;
         throw new Exception('Validation failed');
     }
-
     // Generate unique refId
     do {
         $refId = random_int(100000, 999999);

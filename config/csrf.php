@@ -3,9 +3,7 @@
  * CSRF Protection Utility
  * Provides CSRF token generation, validation, and management
  */
-
-class CSRFProtection {
-    
+class CSRFProtection { 
     /**
      * Generate a new CSRF token
      * @return string The generated token

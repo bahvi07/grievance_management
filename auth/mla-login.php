@@ -3,8 +3,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Simple session start instead of secure session
-session_start();
+require_once __DIR__ . '/../config/session-config.php';
+startSecureSession();
 require_once '../config/config.php';
 
 $errorMsg = '';

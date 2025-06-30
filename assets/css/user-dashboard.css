@@ -440,3 +440,33 @@ main {
   height: 1rem;
   border-width: 0.15em;
 }
+
+/* Raiting Style */
+  .rating-container {
+    margin: 15px 0;
+  }
+  
+  .stars {
+    display: inline-flex;
+    gap: 5px;
+  }
+  
+  .star {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .star:hover,
+  .star.active {
+    color: #ffc107;
+  }
+  
+  .star.filled {
+    color: #ffc107;
+  }
+  
+  .rating-text {
+    font-size: 0.9rem;
+  }

@@ -1,9 +1,7 @@
 <?php
-// send_otp.php
+// send_code.php
 require_once '../config/session-config.php';
 startSecureSession();
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
 require_once '../vendor/phpmailer/phpmailer/src/Exception.php';
 require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require_once '../vendor/phpmailer/phpmailer/src/SMTP.php';
@@ -17,27 +15,21 @@ header('Content-Type: application/json');
 // Load environment variables from .env file
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
-
 $response = ['success' => false, 'message' => ''];
-
 try {
     if($_SERVER['REQUEST_METHOD'] !== 'POST'){
         throw new Exception('Invalid Request Method');
     }
-    
     // Verify CSRF token from JSON request
     if (!CSRFProtection::verifyJsonToken()) {
         throw new Exception('Security validation failed. Please refresh the page and try again.');
-    }
-    
+    } 
     // Get JSON data from request body
     $json = file_get_contents('php://input');
-    $data = json_decode($json, true);
-    
+    $data = json_decode($json, true);  
     if (!$data) {
         throw new Exception('Invalid JSON data');
     }
-    
     $email = $data['email'] ?? '';
     $id = $data['id'] ?? '';
     
@@ -46,13 +38,13 @@ try {
     }
     
     $code = rand(100000, 999999);
-    
     // Store code in session for verification
     $_SESSION['reset_code'] = $code;
     $_SESSION['reset_email'] = $email;
     $_SESSION['reset_admin_id'] = $id;
     $_SESSION['reset_time'] = time(); // For expiration check
     
+    // Email Config from .env file
     $host = $_ENV['MAIL_HOST'];
     $port = $_ENV['MAIL_PORT'];
     $username = $_ENV['MAIL_USERNAME'];

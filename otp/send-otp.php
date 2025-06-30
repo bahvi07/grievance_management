@@ -1,8 +1,5 @@
 <?php
 // send_otp.php
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-
 require_once '../config/config.php';
 header('Content-Type: application/json');
 
@@ -21,7 +18,6 @@ if (empty($phone) || !preg_match('/^[6-9]\d{9}$/', $phone)) {
 }
 
 $ip_address = $_SERVER['REMOTE_ADDR'];
-
 // --- Lockout Check ---
 $stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? OR ip_address = ? ORDER BY id DESC LIMIT 1");
 $stmt->bind_param("ss", $phone, $ip_address);
@@ -52,9 +48,6 @@ $stmt = $conn->prepare("INSERT INTO otp_requests (phone, otp, is_used) VALUES (?
 $stmt->bind_param("ssi", $phone, $otp_hash, $is_used);
 
 if ($stmt->execute()) {
-    // Don't increment attempt count here - only count attempts when verifying OTP
-    // This prevents double counting (send OTP = 1 attempt, verify OTP = 2 attempts)
-    
     echo json_encode(['status' => 'success', 'otp' => $otp]); // For development only, remove `otp` in production
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to store OTP']);

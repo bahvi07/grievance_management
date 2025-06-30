@@ -211,13 +211,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log("Complaint image not found: $imagePath", 3, '../logs/error.log');
             }
         }
-
         $mail->send();
-
         // If mail is sent, update the status and priority
         updateStatusAndPriority($refid, $priority, $admin_name, $conn);
         updateComplaintForward($dept_id, $dept_name, $dept_category, $dept_area, $dept_phone, $to, $refid, $conn, $name, $location, $description, $priority, $admin_name);
-
         sendJsonResponse(true, 'Complaint forwarded successfully!');
     } catch (Exception $e) {
         error_log('Mail sending failed: ' . $e->getMessage(), 3, '../logs/error.log');

@@ -1,24 +1,18 @@
 <?php
 // Prevent any output
 ob_start();
-
 // Start session
 require_once '../../config/session-config.php';
 startSecureSession();
-
 // Include configuration
 require_once '../../config/config.php';
-
 // Clear any output buffer
 ob_clean();
-
 // Set JSON header
 header('Content-Type: application/json');
-
 // Disable error display
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
-
 try {
     // Verify CSRF token
     if (!CSRFProtection::verifyPostToken()) {

@@ -1,6 +1,4 @@
 <?php
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
 
 require_once '../config/config.php';
 header('Content-Type: application/json');
@@ -20,7 +18,6 @@ if (!isset($_POST['phone']) || !preg_match('/^[6-9]\d{9}$/', $_POST['phone'])) {
 $phone = $_POST['phone'];
 $ip_address = $_SERVER['REMOTE_ADDR'];
 
-// ✅ NEW: Check if this is a resend after failed verification
 $bypass_cooldown = isset($_POST['failed_verification']) && $_POST['failed_verification'] === 'true';
 
 // --- Lockout Check ---
@@ -44,7 +41,6 @@ if ($attempt && $attempt['is_locked'] && strtotime($attempt['lock_expiry']) > ti
 
 // Don't increment attempt count for resend - only count verification attempts
 // This prevents double counting and allows users to resend OTP without penalty
-
 // --- Resend Cooldown Check (✅ MODIFIED: Skip if failed verification) ---
 if (!$bypass_cooldown) {
     $stmt = $conn->prepare("SELECT created_at FROM otp_requests WHERE phone = ? ORDER BY id DESC LIMIT 1");
@@ -70,7 +66,6 @@ if (!$bypass_cooldown) {
 // --- Generate and Store New OTP ---
 $otp = rand(100000, 999999);
 $expires_at = date('Y-m-d H:i:s', strtotime("+" . OTP_EXPIRY_MINUTES . " minutes"));
-
 $stmt = $conn->prepare("INSERT INTO otp_requests (phone, otp, expires_at) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $phone, $otp, $expires_at);
 
@@ -79,7 +74,6 @@ if ($stmt->execute()) {
     if ($bypass_cooldown) {
         error_log("OTP resend bypassed cooldown for phone: $phone (failed verification)", 3, LOG_FILE);
     }
-    
     echo json_encode([
         'status' => 'success',
         'message' => 'A new OTP has been sent.',

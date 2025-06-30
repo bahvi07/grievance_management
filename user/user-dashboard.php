@@ -2,56 +2,12 @@
 // Start session first before any CSRF operations
 require_once '../config/session-config.php';
 startSecureSession();
-
 // Include config for CSRF functions
 require_once '../config/config.php';
-
 // Use include_once to prevent multiple inclusions and remove the redundant config include
 include_once '../includes/header.php';
 include_once '../auth/auth-check.php';
 ?>
-
-<style>
-  /* Star Rating Styles */
-  .rating-container {
-    margin: 15px 0;
-  }
-  
-  .stars {
-    display: inline-flex;
-    gap: 5px;
-  }
-  
-  .star {
-    font-size: 2rem;
-    color: #ddd;
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  
-  .star:hover,
-  .star.active {
-    color: #ffc107;
-  }
-  
-  .star.filled {
-    color: #ffc107;
-  }
-  
-  .rating-text {
-    font-size: 0.9rem;
-  }
-  
-  /* Remove the problematic hover effect that was overriding click selection */
-  /* .stars:hover .star {
-    color: #ffc107;
-  }
-  
-  .stars .star:hover ~ .star {
-    color: #ddd;
-  } */
-</style>
-
 </head>
 
 <body>
@@ -191,7 +147,6 @@ Feedback</a></li>
                 $categoryStmt = $conn->prepare("SELECT name FROM dept_category WHERE status = 1 ORDER BY name ASC");
                 $categoryStmt->execute();
                 $categoryResult = $categoryStmt->get_result();
-                
                 while ($category = $categoryResult->fetch_assoc()) {
                     echo '<option value="' . htmlspecialchars($category['name']) . '">' . htmlspecialchars($category['name']) . '</option>';
                 }
@@ -270,7 +225,6 @@ Feedback</a></li>
           </div>
 
           <!-- Modal Footer with Buttons -->
-          <!-- Inside the modal footer -->
           <div class="modal-footer d-flex flex-column gap-2">
             <button type="button" id="delete" class="btn btn-danger w-100 rounded-pill">
               <i class="fas fa-trash-alt me-2"></i>Yes, Delete My Account
@@ -280,11 +234,9 @@ Feedback</a></li>
             </button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
-
 
   <!-- Edit profile Modal -->
   <div class="modal fade" tabindex="-1" id="edit-profile">

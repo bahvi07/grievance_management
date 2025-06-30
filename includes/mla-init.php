@@ -1,14 +1,21 @@
 <?php
 // MLA Initialization
 // This file handles MLA authentication and database connection
-
-session_start();
-
+require_once __DIR__ . '/../config/session-config.php';
+startSecureSession();
 // Include database configuration
 require_once __DIR__ . '/../config/config.php';
 
 // Check if MLA is logged in
 function check_mla_auth() {
+    // Validate session first
+    if (!validateSession()) {
+        session_unset();
+        session_destroy();
+        header('Location: ../auth/mla-login.php');
+        exit();
+    }
+    
     if (!isset($_SESSION['mla_id']) || !isset($_SESSION['mla_name'])) {
         header('Location: ../auth/mla-login.php');
         exit();

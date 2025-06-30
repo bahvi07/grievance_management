@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../config/session-config.php';
+startSecureSession();
 
 // Log logout
 if (isset($_SESSION['mla_id'])) {

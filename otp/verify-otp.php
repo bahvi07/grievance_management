@@ -15,7 +15,6 @@ if (empty($phone) || !preg_match('/^[6-9]\d{9}$/', $phone)) {
     echo json_encode(['status' => 'error', 'message' => 'Invalid phone number.']);
     exit;
 }
-
 // Check for lockout BEFORE attempting to verify OTP
 $ip_address = $_SERVER['REMOTE_ADDR'];
 $stmt = $conn->prepare("SELECT * FROM user_login_attempts WHERE phone = ? ORDER BY id DESC LIMIT 1");
@@ -53,7 +52,6 @@ if ($result->num_rows === 1) {
         // Generate secure values
         $token = bin2hex(random_bytes(16));
         $user_name = 'user_' . substr($phone, -4) . '_' . substr(bin2hex(random_bytes(2)), 0, 4);
-
         // Update user_token and user_name
         $update = $conn->prepare("
             UPDATE otp_requests 
@@ -62,7 +60,6 @@ if ($result->num_rows === 1) {
         ");
         $update->bind_param("ssi", $token, $user_name, $otp_id);
         $update->execute();
-
         // Optional: mark all previous phone entries as logged in
         $loginUpdate = $conn->prepare("UPDATE otp_requests SET is_logged_in = 1 WHERE phone = ?");
         $loginUpdate->bind_param("s", $phone);

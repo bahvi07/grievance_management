@@ -2,8 +2,7 @@
 // send_otp.php
 require_once '../config/session-config.php';
 startSecureSession();
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+
 require_once '../config/config.php';
 header('Content-Type: application/json');
 
@@ -12,13 +11,11 @@ $response = ['success' => false, 'message' => ''];
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid Method');
-    }
-    
+    }    
     // Verify CSRF token from JSON request
     if (!CSRFProtection::verifyJsonToken()) {
         throw new Exception('Security validation failed. Please refresh the page and try again.');
     }
-
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
 
